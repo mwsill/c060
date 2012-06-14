@@ -1,3 +1,10 @@
+#Change log:
+# 13-06-2012 (MZ):
+# - changes to plot.stabpath() in a fashion similar to glmnet:::plotCoef; allow users to choose colours
+
+require(glmnet)
+require(parallel)
+
 stability.path <- function(y,x,mc.cores=getOption("mc.cores", 2L),size=0.632,steps=100,weakness=1,...){
 	fit <- glmnet(x,y,...)
 	p <- ncol(x)
@@ -41,20 +48,45 @@ stability.selection <- function(stabpath,fwer,pi_thr=0.8){
 }
 
 #plot penalization and stability path 
-plot.stabpath <- function(stabpath,fwer,pi_thr=0.8,...){
-	sel <- stability.selection(stabpath,fwer,pi_thr)
-	p <- dim(stabpath$fit$beta)[1]
-	#stability path
-	cols <- rep("black",p)
-	cols[sel$stable] <- "red"
-	par(mfrow=c(2,1))
-	matplot(t(as.matrix(stabpath$fit$beta)),xaxt="n",type="l",col=cols,lty=1,ylab=expression(paste	(beta[i]))
-        ,xlab=expression(paste(lambda)),main="Penalization Path",cex.lab=1,cex.axis=1,...)
-	matplot(t(as.matrix(stabpath$stabpath)),xaxt="n",type="l",col=cols,lty=1,ylab=expression(paste(hat(Pi)))
-        ,xlab=expression(paste(lambda)),main="Stability Path",ylim=c(0,1),cex.lab=1,cex.axis=1,...)
-	abline(h=pi_thr,col="darkred",lwd=1,lty=1)
-	abline(v=sel$lpos,col="darkred",lwd=1,lty=1)
-	#text(x=20,y=0.9,paste(expression(paste(lambda)),"=",paste(round(sel[[2]],digits=3)),sep=""),cex=0.75)
-	return(sel)
+plot.stabpath <- function(stabpath, fwer, pi_thr=0.8, xvar=c("lambda", "norm", "dev"), col.all="black", col.sel="red",...){
+  sel <- stability.selection(stabpath,fwer,pi_thr)
+  
+  beta = as.matrix(stabpath$fit$beta)
+  p <- dim(beta)[1]
+  which = nonzeroCoef(beta)
+  nwhich = length(which)
+  switch(nwhich + 1, `0` = {
+    warning("No plot produced since all coefficients zero")
+    return()
+  }, `1` = warning("1 or less nonzero coefficients; glmnet plot is not meaningful"))
+  xvar = match.arg(xvar)
+  switch(xvar, norm = {
+    index = apply(abs(beta), 2, sum)
+    iname = "L1 Norm"
+  }, lambda = {
+    index = log(stabpath$fit$lambda)
+    iname = expression(paste("log ",lambda))
+  }, dev = {
+    index = stabpath$fit$dev
+    iname = "Fraction Deviance Explained"
+  })
+  
+  #stability path
+  cols <- rep(col.all,p)
+  cols[sel$stable] <- col.sel
+  lwds <- rep(1,p)
+  lwds[sel$stable] <- 2
+  par(mfrow=c(2,1))
+  matplot(y=t(beta), x=index
+          ,type="l",col=cols,lwd=lwds,lty=1,ylab=expression(paste(beta[i]))
+          ,xlab=iname,main="Penalization Path",cex.lab=1,cex.axis=1,...)
+  matplot(y=as.matrix(t(stabpath$stabpath)), x=index
+          ,type="l",col=cols,lwd=lwds,lty=1,ylab=expression(paste(hat(Pi)))
+          ,xlab=iname,main="Stability Path",ylim=c(0,1),cex.lab=1,cex.axis=1,...)
+  abline(h=pi_thr,col="darkred",lwd=1,lty=1)
+  abline(v=index[sel$lpos],col="darkred",lwd=1,lty=1)
+  #text(x=20,y=0.9,paste(expression(paste(lambda)),"=",paste(round(sel[[2]],digits=3)),sep=""),cex=0.75)
+  
+  return(sel)
 }
 
