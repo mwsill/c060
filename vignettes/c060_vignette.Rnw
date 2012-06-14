@@ -1,0 +1,222 @@
+% setwd("C:/Projekte/explained variation/peperr/CSDA/")
+% setwd("~/Projekte_StatsMethods/c060/pkg/vignette")
+% library(cacheSweave)
+% Sweave("c060_vignette.Rnw", driver = cacheSweaveDriver)
+% tools::texi2dvi("c060_vignette.tex", pdf=TRUE)
+
+\documentclass[a4paper, 11pt]{article}
+
+\parskip 0.5em  
+\parindent 0em
+
+\oddsidemargin-5mm
+\evensidemargin-5mm
+\textwidth165mm
+
+\smartqed  % flush right qed marks, e.g. at end of proof
+
+\usepackage{graphicx}
+\usepackage{mathptmx}      % use Times fonts if available on your TeX system
+\usepackage[authoryear]{natbib}
+\usepackage{longtable}
+\usepackage{hyperref}
+
+% please place your own definitions here and don't use \def but
+% \newcommand{}{}
+\newcommand{\Scmd}[1]{\texttt{#1}} % For R/ S commands
+
+\begin{document}
+
+\setkeys{Gin}{width=\textwidth}% general figure width
+\SweaveOpts{prefix.string=figures/fig, eps=FALSE}
+%Because eps=FALSE, all graphics are created as pdf graphics only. This implies that the resulting tex document needs to be compiled with pdflatex rather than with latex.
+
+\title{C060 Vignette}%
+\author{Martin Sill, Thomas Hielscher, Natalia Becker, Manuela Zucknick}
+\date{}
+
+\maketitle
+
+\section{Introduction}
+
+Data from published gene expression studies are often deposited in public data repositories, for example on the Gene Expression Omnibus (GEO) website by the NCBI (National Center for Biotechnology Information): \url{http://www.ncbi.nlm.nih.gov/geo}. We find the Metzeler \textit{et al.} data under GEO accession number GSE12417.
+
+Here should follow a detailed description of 
+\begin{enumerate}
+\item the problem (what do we want to do)
+\item the existing methods and R software (what exists in glmnet package and which functions are missing)
+\item the data set
+\end{enumerate}
+
+<<setup, echo=F, results=hide>>=
+rm(list=ls())
+
+#################################################
+### load libraries
+#################################################
+library(cacheSweave)
+library(Biobase)
+library(genefilter)
+library(glmnet)
+library(parallel)
+
+#################################################
+### set folder for automatically created figures
+### to be specified in \SweaveOpts
+#################################################
+dir.create("figures",showWarnings = FALSE)
+
+#########################################
+# set cache folder
+# needs different driver, to run as:
+# Sweave("c060_vignette.Rnw",driver=cacheSweaveDriver)
+#########################################
+setCacheDir("cache")
+@
+
+<<GEOdataGSE12417, echo=F, results=hide>>=
+if (file.exists("Rdata/expressionSet.Rdata")) {
+    load("Rdata/expressionSet.Rdata") 
+} else {
+    library(GEOquery)
+    
+    dir.create("GEOdata",showWarnings = FALSE)
+    dir.create("Rdata",showWarnings = FALSE)
+    
+    # download processed data files from url or if available get data from locally saved copies
+    geo_exprs_data  <- getGEO("GSE12417", destdir="GEOdata",AnnotGPL=T)[[1]]
+    annotation(geo_exprs_data) <- "hgu133plus2"
+    
+    #clinical characteristics including survival data are in "characteristics_ch1" in the phenoData 
+    clin.df <- as.data.frame(strsplit2(as.character(pData(geo_exprs_data)$characteristics_ch1), split=";"))
+    clin.df[,1] <- strsplit2(clin.df[,1]," ")[,7]
+    clin.df[,2] <- as.numeric(sub("=", "", strsplit2(clin.df[,2]," ")[,3]))
+    clin.df[,3] <- as.numeric(strsplit2(clin.df[,3]," ")[,4])
+    clin.df[,4] <- as.numeric(strsplit2(clin.df[,4]," ")[,4])
+    colnames(clin.df) <- c("FAB", "age", "os", "os_status")
+    rownames(clin.df) <- rownames(pData(geo_exprs_data))
+    pData(geo_exprs_data) <- clin.df
+
+    save(geo_exprs_data, file="Rdata/expressionSet.Rdata")  
+    unlink("GEOdata", recursive=TRUE) #delete GEOdata
+} 
+@
+
+<<preprocessData, echo=F, results=hide>>=
+##########################################
+### unspecific filtering
+#   select most varying probe sets
+##########################################
+rowvars    <- rowVars(exprs(geo_exprs_data))
+topprobes   <- which(rowvars>=sort(rowvars,decreasing=T)[10000])
+eset       <- geo_exprs_data[topprobes,]     
+@
+
+\clearpage
+\section{Lasso penalised Cox PH regression model} 
+
+\begin{figure}
+<<glmnet, echo=F, results=hide, fig=TRUE, height=4>>=
+##########################################
+#   glmnet
+##########################################
+set.seed(1234)
+y <- cbind(time=pData(eset)$os, status=pData(eset)$os_status)
+cvres <- cv.glmnet(y=y, x=t(exprs(eset)), family="cox", nfolds=10)
+res <- cvres$glmnet.fit
+plot(cvres)
+
+cof <- coef(res, s=cvres$lambda.min)
+names.cof <- rownames(cof)
+cofn <- cof[which(cof!=0)]
+names(cofn) <- names.cof[which(cof!=0)]
+@
+\caption{\label{fig:cvlasso}Cross-validated partial likelihood function, including upper and lower standard deviations, as a function of $\log{\lambda}$ for the AML data set.}
+\end{figure}
+
+We tune the lasso penalty parameter by 10-fold cross-validation using the cross-validated partial log-likelihood function as the loss function. The resulting penalty parameter value leads to a final lasso model with \Sexpr{length(cofn)} selected features:
+<<glmnet2, echo=F, results=verbatim>>=
+print(cofn)
+#cofn.ix <- predict(res, type="nonzero", s=cvres$lambda.min)
+@
+
+The selected features are highlighted as red lines in the coefficient paths shown in Figure \ref{fig:coefpath}.
+
+\begin{figure}
+<<glmnet3, echo=F, results=hide, fig=TRUE>>=
+bet <- res$beta[match(names(cofn), rownames(res$beta)),]
+par(mar=c(4,4,2.5,1), mgp=c(2.5,1,0), mfrow=c(2,2))
+
+plot(res, xvar="lambda", col="gray")
+glmnet:::plotCoef(bet, lambda = res$lambda, df = res$df, dev = res$dev.ratio, xvar = "lambda", add=TRUE, col="red")
+abline(v=log(cvres$lambda.min), lty=3)
+abline(v=log(cvres$lambda.1se), lty=3)
+
+glmnet:::plotCoef(bet, lambda = res$lambda, df = res$df, dev = res$dev.ratio, xvar = "lambda", add=FALSE, col="red")
+abline(v=log(cvres$lambda.min), lty=3)
+abline(v=log(cvres$lambda.1se), lty=3)
+
+norm <- apply(abs(res$beta), 2, sum)
+plot(res, xvar="norm", col="gray")
+glmnet:::plotCoef(bet, xvar = "norm", add=TRUE, col="red",
+                  norm = norm, lambda = res$lambda, df = res$df, dev = res$dev.ratio)
+abline(v=norm[match(cvres$lambda.min, cvres$lambda)], lty=3)
+abline(v=norm[match(cvres$lambda.1se, cvres$lambda)], lty=3)
+
+plot(res, xvar="dev", col="gray")
+glmnet:::plotCoef(bet, lambda = res$lambda, df = res$df, dev = res$dev.ratio, xvar = "dev", add=TRUE, col="red")
+abline(v=res$dev.ratio[match(cvres$lambda.min, cvres$lambda)], lty=3)
+abline(v=res$dev.ratio[match(cvres$lambda.1se, cvres$lambda)], lty=3)
+@
+\caption{\label{fig:coefpath}Coefficient paths for lasso penalised Cox PH regression model applied to the AML data set.}
+\end{figure}
+
+\clearpage
+At this point we would like to assess the prediction performance of the lasso model. We can do this with bootstrapped prediction error curves and corresponding integrated Brier score values (see Thomas' functions adapted for peperr/pec).
+
+Once we have seen that this model is not very satisfactory, we can attempt to improve the model in two ways. First, we can fit an elastic net model rather than lasso (and use Natalia's search algorithm for that). And second, we can assess the stability of the lasso (and elastic net) models by stability selection and identify the most stable features (using Martin's stabilityselection.R script).
+
+\subsection{Prediction error curves}
+
+\section{Elastic net penalised Cox PH regression model}
+
+\section{Stability selection}
+
+\begin{figure}
+<<stabilitySelection, echo=F, results=hide, fig=TRUE>>=
+##########################################
+### try out glmnetSS.R
+#   stability selection with glmnet
+##########################################
+source("../R/stabilityselection.R")
+
+set.seed(1234)
+y <- cbind(time=pData(eset)$os, status=pData(eset)$os_status)
+res <- stability.path(y=y, x=t(exprs(eset)), weakness=1, mc.cores=2, family="cox")
+par(mar=c(4,4,2,1), mgp=c(2.5,1,0))
+sel <- plot.stabpath(res, fwer=0.2, pi_thr=0.5, xvar="lambda", col.all="gray")
+#sel <- plot.stabpath(res, fwer=0.2, pi_thr=0.5, xvar="norm")
+#sel <- plot.stabpath(res, fwer=0.2, pi_thr=0.5, xvar="dev")
+@
+\caption{\label{fig:stabpath}Coefficient and stability paths for lasso penalised Cox PH regression model applied to the AML data set.}
+\end{figure}
+
+Stable features (with $\hat\Pi > 0.5$ at $\lambda =$\Sexpr{round(sel$lambda, 3)}) are:
+<<stabilitySelection2, echo=F, results=verbatim>>=
+print(sel$stable)
+@
+
+\clearpage
+\section{Summary}
+
+\section{Session Information}
+The version number of \R{} and packages loaded for generating the vignette were:
+<<sessionInfo, echo=FALSE, results=tex>>=
+toLatex(sessionInfo())
+@
+
+%\clearpage
+%\bibliographystyle{plain}
+%\bibliography{c060_vignette}
+
+\end{document}
