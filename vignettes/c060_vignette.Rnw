@@ -1,4 +1,4 @@
-% setwd("C:/Projekte/explained variation/peperr/CSDA/")
+% setwd("C:/Projekte/explained variation/peperr/CSDA/c060/pkg/vignettes")
 % setwd("~/Projekte_StatsMethods/c060/pkg/vignette")
 % library(cacheSweave)
 % Sweave("c060_vignette.Rnw", driver = cacheSweaveDriver)
@@ -13,7 +13,7 @@
 \evensidemargin-5mm
 \textwidth165mm
 
-\smartqed  % flush right qed marks, e.g. at end of proof
+%\smartqed  % flush right qed marks, e.g. at end of proof
 
 \usepackage{graphicx}
 \usepackage{mathptmx}      % use Times fonts if available on your TeX system
@@ -24,6 +24,7 @@
 % please place your own definitions here and don't use \def but
 % \newcommand{}{}
 \newcommand{\Scmd}[1]{\texttt{#1}} % For R/ S commands
+\newcommand{\R}{R}
 
 \begin{document}
 
@@ -59,6 +60,16 @@ library(Biobase)
 library(genefilter)
 library(glmnet)
 library(parallel)
+library(peperr)
+library(ggplot2)
+library(GEOquery)
+library(limma)
+
+#########################################
+# R functions required
+#########################################
+source("../R/peperr_glmnet.r")
+source("../R/stabilityselection.R")
 
 #################################################
 ### set folder for automatically created figures
@@ -176,8 +187,150 @@ At this point we would like to assess the prediction performance of the lasso mo
 
 Once we have seen that this model is not very satisfactory, we can attempt to improve the model in two ways. First, we can fit an elastic net model rather than lasso (and use Natalia's search algorithm for that). And second, we can assess the stability of the lasso (and elastic net) models by stability selection and identify the most stable features (using Martin's stabilityselection.R script).
 
-\subsection{Prediction error curves}
+\subsection{Resampling based Prediction errors}
+Once the final prognostic model is selected, we need to assess its prediction accuracy for future patients, and frequently to compare
+it with established clinico-pathological prognostic markers. In many applications no independent validation data set is available.
+The same data set need to be used to develop and assess the prognostic model. This is even more problematic for high-dimensional data,
+where the risk of overfitting is much more present. Resampling-based methods can be used to unbiasedly estimate the predictive accuracy 
+of the prognostic model in this situation. This is also called internal validation or pre-validation.
 
+The \texttt{R} package \texttt{peperr} \citep{Porz2009} provides a modular framework for survival and binary endpoints, i.e. prognostic and
+classification models. Wrapper functions for new or customized prediction model algorithms can be defined and passed to the general call function.  
+In case of prognostic models, algorithm specific wrapper functions for model fitting, tuning and prediction are required.
+Wrapper functions for a few machine learning approaches are already implemented.
+
+Prediction accuracy is per default assessed with prediction error curves based on the time-dependent Brier score \citep{graf99}. 
+But it is also possible to define and use customized accuracy measures.
+
+We defined additional wrapper functions for the \texttt{glmnet} algorithm for fitting (\texttt{fit.glmnet}) and tuning (\texttt{complexity.glmnet}) the model,
+and predicting survival probabilities (\texttt{predictProb.glmnet}) based on the estimated model and baseline hazard from the training data. 
+
+We estimate the $L_1$-penalized Cox PH regression model for overall survival starting with the 10.000 most varying probe sets using \texttt{glmnet}. 
+The $.632+$ bootstrap estimator is calculated based on subsampling \citep{BS2008} using only 10 bootstrap samples for illustration.
+
+<<peperr, echo=T, results=hide, cache=T>>=
+peperr_obj <- peperr(response=Surv(eset$os, eset$os_status), x=t(exprs(eset)),
+                     fit.fun=fit.glmnet,args.fit=list(standardize=F, family="cox"),
+                     complexity=complexity.glmnet, args.complexity=list(standardize=F, family="cox", nfolds=10),
+                     trace=F, RNG="fixed",seed=0815, 
+                     indices=resample.indices(n=dim(eset)[2], sample.n = 10, method = "sub632"))
+@
+
+Bootstrap results can be visualized with the \texttt{plot.peperr.curves} function, which is a slightly modified version of \texttt{plot} function from the \texttt{peperr} package
+and allows to display the number still at risk.
+
+\begin{figure}
+<<peperrPlot, echo=T, results=hide, fig=TRUE, width=12, height=10>>=
+plot.peperr.curves(peperr_obj, at.risk=T)
+@
+\caption{Prediction error curves}
+\end{figure}
+
+The \texttt{peperr} package is designed for high-dimensional covariates data and allows for various types of parallel computations.
+Here, we re-run the calculations on 3 CPUs in parallel using a socket cluster on a Windows OS.
+
+<<peperrParallel, echo=T, results=hide, cache=T>>=
+peperr_obj_parallel <- peperr(response=Surv(eset$os, eset$os_status), x=t(exprs(eset)),
+                              fit.fun=fit.glmnet,args.fit=list(standardize=F, family="cox"),
+                              complexity=complexity.glmnet, args.complexity=list(standardize=F, family="cox", nfolds=10),
+                              trace=F, RNG="fixed",seed=0815, cpus=3, parallel=T, clustertype="SOCK", 
+                              load.list=list(functions=c("basesurv")),
+                              indices=resample.indices(n=dim(eset)[2], sample.n = 10, method = "sub632"))
+@
+
+<<peperrParallelPlot, echo=F, results=hide, fig=F, width=12, height=10>>=
+plot.peperr.curves(peperr_obj_parallel, at.risk=T)
+@
+
+Additional arguments can be passed directly to the \texttt{glmnet} call by specifing additional arguments for the fitting or tuning procedure.
+Here, we include patient's age as mandatory model variable into the prognostic model, i.e. age is not subject to penalization.
+
+<<peperrMandatoryParallel, echo=T, results=hide, cache=T>>=
+peperr_obj_parallel_mandatory  <- peperr(response=Surv(eset$os, eset$os_status), x=data.frame(eset$age,t(exprs(eset))),
+                                          fit.fun=fit.glmnet,args.fit=list(standardize=F, family="cox", 
+                                                                           penalty.factor=rep(0:1,times=c(1,dim(eset)[1]))),
+                                          complexity=complexity.glmnet, args.complexity=list(standardize=F, nfolds=10, family="cox",
+                                                                                             penalty.factor=rep(0:1,times=c(1,dim(eset)[1]))),
+                                          trace=F, RNG="fixed",seed=0815, cpus=3, parallel=T, clustertype="SOCK", 
+                                          load.list=list(functions=c("basesurv")),
+                                          indices=resample.indices(n=dim(eset)[2], sample.n = 10, method = "sub632"))
+@
+
+<<peperrMandatoryParallelPlot, echo=F, results=hide, fig=F, width=12, height=10>>=
+lines(peperr_obj$attribute,perr(peperr_obj,"632p"),lty=1,col=6)
+@
+
+For classification models, the same wrapper functions for fitting and tuning the model are called.
+Model performance measures so far available are misclassification rate and Brier score. But other measures
+such as area under the ROC curve can be set up easiliy.
+
+We  extended functionality of Brier score (\texttt{aggregation.brier}) and misclassification rate (\texttt{aggregation.misclass}) calculation for \texttt{glmnet} algorithm, and
+defined AUC under the ROC curve in addition with the function \texttt{aggregation.auc}. For binary responses, the \texttt{peperr} package lacks the same modular flexibility 
+as for time-to-event endpoints. The predicted class probability is calculated within the performance/aggregation function by calling the algorithm specific predict function.
+For each new algorithm the aggregation function has to be modified and overwritten.
+
+For illustration purpose only we use survival status as binary response variable and build the $L_1$-penalized logistic regression model.
+All three prediction accuracy measures are calculated. Again, computations are run in parallel.
+Results of 10 bootstrap runs are displayed in plain boxplots.
+
+<<peperrBinaryParallel, echo=F, results=hide, cache=T>>=
+peperr_obj_parallel_binary_brier  <- peperr(response=eset$os_status, x=t(exprs(eset)),
+                                            fit.fun=fit.glmnet,args.fit=list(standardize=F, family="binomial"),
+                                            complexity=complexity.glmnet, args.complexity=list(standardize=F, family="binomial", nfolds=10),
+                                            trace=F, RNG="fixed",seed=0815, cpus=3, parallel=T, clustertype="SOCK", 
+                                            aggregation.fun=aggregation.brier,
+                                            indices=resample.indices(n=dim(eset)[2], sample.n = 20, method = "sub632"))
+
+peperr_obj_parallel_binary_misclass  <- peperr(response=eset$os_status, x=t(exprs(eset)),
+                                               fit.fun=fit.glmnet,args.fit=list(standardize=F, family="binomial"),
+                                               complexity=complexity.glmnet, args.complexity=list(standardize=F, family="binomial", nfolds=10),
+                                               trace=F, RNG="fixed",seed=0815, cpus=3, parallel=T, clustertype="SOCK", 
+                                               aggregation.fun=aggregation.misclass,
+                                               indices=resample.indices(n=dim(eset)[2], sample.n = 20, method = "sub632"))
+
+peperr_obj_parallel_binary_auc  <- peperr(response=eset$os_status, x=t(exprs(eset)),
+                                          fit.fun=fit.glmnet,args.fit=list(standardize=F, family="binomial"),
+                                          complexity=complexity.glmnet, args.complexity=list(standardize=F, family="binomial", nfolds=10),
+                                          trace=F, RNG="fixed",seed=0815, cpus=3, parallel=T, clustertype="SOCK", 
+                                          aggregation.fun=aggregation.auc,
+                                          indices=resample.indices(n=dim(eset)[2], sample.n = 20, method = "sub632"))
+@
+
+\begin{figure}
+<<peperrBinaryPlot, echo=F, results=hide, fig=TRUE, width=12, height=10 >>=
+bootsamples  <- data.frame(type  = rep(c("Brier Score","Misclassification Rate","AUC"),each=20),
+                           error = c(unlist(peperr_obj_parallel_binary_brier$sample.error),
+                                     unlist(peperr_obj_parallel_binary_misclass$sample.error),
+                                     unlist(peperr_obj_parallel_binary_auc$sample.error)))
+
+hline_data   <- data.frame(type  = rep(c("Brier Score","Misclassification Rate","AUC"),each=4),
+                           error= rep(c("mean\nout-of-bag",".632plus","apparent","null model"),3),
+                                     # aggregated Brier score
+                           at    = c(perr(peperr_obj_parallel_binary_brier,"resample"),
+                                     perr(peperr_obj_parallel_binary_brier,"632p"),
+                                     perr(peperr_obj_parallel_binary_brier,"app"),
+                                     perr(peperr_obj_parallel_binary_brier,"nullmodel"),
+                                     # aggregated misclassification
+                                     perr(peperr_obj_parallel_binary_misclass,"resample"),
+                                     perr(peperr_obj_parallel_binary_misclass,"632p"),
+                                     perr(peperr_obj_parallel_binary_misclass,"app"),
+                                     perr(peperr_obj_parallel_binary_misclass,"nullmodel"),
+                                     # aggregated AUC
+                                     perr(peperr_obj_parallel_binary_auc,"resample"),
+                                     perr(peperr_obj_parallel_binary_auc,"632p"),
+                                     perr(peperr_obj_parallel_binary_auc,"app"),
+                                     perr(peperr_obj_parallel_binary_auc,"nullmodel")))
+
+p    <- ggplot(bootsamples, aes(type,error))
+pg   <- p + geom_boxplot(outlier.colour = rgb(0,0,0,0), outlier.size=0) + geom_jitter(position=position_jitter(width=.05)) + 
+        theme_bw() + scale_y_continuous("") +  scale_x_discrete("") + facet_wrap(~ type, scales="free") +
+        geom_hline(aes(yintercept=at, x=type, colour=error), hline_data, show_guide=TRUE) + opts(legend.position = "bottom")
+print(pg)
+@
+\caption{Classification error}
+\end{figure}
+
+\clearpage
 \section{Elastic net penalised Cox PH regression model}
 
 \section{Stability selection}
@@ -188,11 +341,12 @@ Once we have seen that this model is not very satisfactory, we can attempt to im
 ### try out glmnetSS.R
 #   stability selection with glmnet
 ##########################################
-source("../R/stabilityselection.R")
 
 set.seed(1234)
 y <- cbind(time=pData(eset)$os, status=pData(eset)$os_status)
-res <- stability.path(y=y, x=t(exprs(eset)), weakness=1, mc.cores=2, family="cox")
+### parallel computing not enabled on Windows
+cores <- 2; if (sessionInfo()$platform=="x86_64-pc-mingw32/x64 (64-bit)") cores <- 1
+res <- stability.path(y=y, x=t(exprs(eset)), weakness=1, mc.cores=cores, family="cox")
 par(mar=c(4,4,2,1), mgp=c(2.5,1,0))
 sel <- plot.stabpath(res, fwer=0.2, pi_thr=0.5, xvar="lambda", col.all="gray")
 #sel <- plot.stabpath(res, fwer=0.2, pi_thr=0.5, xvar="norm")
@@ -215,8 +369,8 @@ The version number of \R{} and packages loaded for generating the vignette were:
 toLatex(sessionInfo())
 @
 
-%\clearpage
-%\bibliographystyle{plain}
-%\bibliography{c060_vignette}
+\clearpage
+\bibliographystyle{spbasic}      % basic style, author-year citations 
+\bibliography{c060}   % name your BibTeX data base
 
 \end{document}
