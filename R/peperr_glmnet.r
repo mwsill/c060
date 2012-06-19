@@ -1,5 +1,6 @@
-
-# helper function: baseline survival/ hazard Breslow estimator
+###############################################################
+# baseline survival/ hazard Breslow estimator
+###############################################################
 basesurv <- function (response, lp, times.eval = NULL, centered = FALSE)
 {
 # function essentially based on gbm:::basehaz.gbm
@@ -68,10 +69,16 @@ predictProb.glmnet <- function (object, x, times, complexity,  ...)
     p
 }
 
+PLL.coxnet <- function(object, newdata, newtime, newstatus, complexity, ...) 
+{
+   require(glmnet)
+   PLL <- glmnet:::coxnet.deviance(pred = NULL, Surv(newtime,newstatus), x = newdata, offset = NULL, weights = NULL, beta = coef(object,s=complexity)) 
+   PLL / -2
+}
 
-#############################
-###### classification    ####
-#############################
+##################################################
+###### classification aggregation functions   ####
+##################################################
 
 aggregation.misclass <- function (full.data = NULL, response, x, model, cplx = NULL, 
     type = c("apparent", "noinf"), fullsample.attr = NULL, ...) 
@@ -163,7 +170,7 @@ aggregation.auc <- function (full.data = NULL, response, x, model, cplx = NULL,
 }
 
 ########################
-### plot             ###
+### plot pecs        ###
 ########################
 
 plot.peperr.curves <- function(x,at.risk=TRUE,...) {
@@ -182,7 +189,7 @@ plot.peperr.curves <- function(x,at.risk=TRUE,...) {
   lines(x$attribute, x$null.model, type = "l", col = "blue", lwd = 2, lty = 1)
   lines(x$attribute, perr(x), type = "l", lty = 1, lwd = 2)
   lines(x$attribute, x$full.apparent, type = "l", col = "red", lty = 1, lwd = 2)
-  legend(x = "topright", col = c("blue", "black", "red", "light grey"), lwd=2, 
+  legend(x = "topleft", col = c("blue", "black", "red", "light grey"), lwd=c(2,2,2,1), 
          lty = c(1, 1, 1, 1), legend = c("Null model", ".632+ estimate", "Full apparent", "Bootstrap samples"))
   
   if (at.risk) {
@@ -195,3 +202,4 @@ plot.peperr.curves <- function(x,at.risk=TRUE,...) {
      text(x=tmpxaxp[2]+(tmpusr[2]-tmpxaxp[2])/2, y=tmpusr[3], labels="at\nrisk", cex=0.8, pos=3)
   }  
 }
+
