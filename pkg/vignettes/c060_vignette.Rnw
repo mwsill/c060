@@ -434,7 +434,7 @@ toLatex(sessionInfo())
 @
 
 \clearpage
-\bibliographystyle{spbasic}      % basic style, author-year citations 
+\bibliographystyle{model2-names}
 \bibliography{c060}   % name your BibTeX data base
 
 \end{document}
