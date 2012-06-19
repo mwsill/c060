@@ -40,6 +40,22 @@
 
 \section{Introduction}
 
+Penalized regression models provide a statistically appealing method to build predictive models from high-dimensional data sources. Since the 
+introduction of the LASSO for linear regression models \citep{tibshirani96}, the methodology has been extended to generalized linear regression models,
+time-to-event endpoints etc. Various penalty functions besides $L_1$- and $L_2$-norm have been proposed to select features and/or estimate their effect.
+
+With ever increasing data, the properties of the algorithm to actually fit the model have become almost as important as the statistical model itself. 
+In 2010, Friedman, Hastie and Tibshirani proposed a coordinate descent algorithm \citep{FHT2010} for generalized linear regression models, which was
+later on extended to penalized Cox PH regression models \citep{simon2011}. Due to its efficiency this algorithm is considered one of the state-of-the-art
+approaches to estimate penalized regression models with LASSO, ridge or elastic net penalty term. 
+
+This algorithm has also been implemented in \R{} in the \texttt{glmnet} package. The package provides functions to tune and fit regression models, 
+plot the results, and make predictions. However, in practical applications, possibly lacking an independent validation data set, some additional features and routines are
+desirable to perform a more detailed analysis. We have assembled some functions that enhance the existing functionality of the \texttt{glmnet} package or
+allows to use it within the framework of other existing \R{} packages. These functions have been useful in our daily work here at the German Cancer Research 
+Center where prognostic models are of particular interest. Therefore, we focus on penalized Cox PH regression models in this article. But most of the functions
+are applicable to all types of regression models provided by the \texttt{glmnet} package.
+
 Data from published gene expression studies are often deposited in public data repositories, for example on the Gene Expression Omnibus (GEO) website by the NCBI (National Center for Biotechnology Information): \url{http://www.ncbi.nlm.nih.gov/geo}. We find the Metzeler \textit{et al.} data under GEO accession number GSE12417.
 
 Here should follow a detailed description of 
