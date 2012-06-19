@@ -4,21 +4,12 @@
 % Sweave("c060_vignette.Rnw", driver = cacheSweaveDriver)
 % tools::texi2dvi("c060_vignette.tex", pdf=TRUE)
 
-\documentclass[a4paper, 11pt]{article}
-
-\parskip 0.5em  
-\parindent 0em
-
-\oddsidemargin-5mm
-\evensidemargin-5mm
-\textwidth165mm
-
-%\smartqed  % flush right qed marks, e.g. at end of proof
+\documentclass[preprint, 11pt, authoryear]{elsarticle}
 
 \usepackage{graphicx}
-\usepackage{mathptmx}      % use Times fonts if available on your TeX system
-\usepackage[authoryear]{natbib}
-\usepackage{longtable}
+%\usepackage{mathptmx}      % use Times fonts if available on your TeX system
+%\usepackage[authoryear]{natbib}
+\usepackage{amssymb}
 \usepackage{hyperref}
 
 % please place your own definitions here and don't use \def but
@@ -26,19 +17,65 @@
 \newcommand{\Scmd}[1]{\texttt{#1}} % For R/ S commands
 \newcommand{\R}{R}
 
+\journal{Computational Statistics \& Data Analysis}
+
 \begin{document}
+
+\begin{frontmatter}
+
+%% Title, authors and addresses
+
+%% use the tnoteref command within \title for footnotes;
+%% use the tnotetext command for the associated footnote;
+%% use the fnref command within \author or \address for footnotes;
+%% use the fntext command for the associated footnote;
+%% use the corref command within \author for corresponding author footnotes;
+%% use the cortext command for the associated footnote;
+%% use the ead command for the email address,
+%% and the form \ead[url] for the home page:
+%%
+%% \title{Title\tnoteref{label1}}
+%% \tnotetext[label1]{}
+%% \author{Name\corref{cor1}\fnref{label2}}
+%% \ead{email address}
+%% \ead[url]{home page}
+%% \fntext[label2]{}
+%% \cortext[cor1]{}
+%% \address{Address\fnref{label3}}
+%% \fntext[label3]{}
 
 \setkeys{Gin}{width=\textwidth}% general figure width
 \SweaveOpts{prefix.string=figures/fig, eps=FALSE}
 %Because eps=FALSE, all graphics are created as pdf graphics only. This implies that the resulting tex document needs to be compiled with pdflatex rather than with latex.
 
-\title{C060 Vignette}%
-\author{Martin Sill, Thomas Hielscher, Natalia Becker, Manuela Zucknick}
-\date{}
+\title{C060 Vignette}
 
-\maketitle
+\author{Martin Sill, Thomas Hielscher, Natalia Becker, Manuela Zucknick}
+
+\address{}
+
+%% use optional labels to link authors explicitly to addresses:
+%% \author[label1,label2]{<author name>}
+%% \address[label1]{<address>}
+%% \address[label2]{<address>}
+
+\begin{abstract}
+%% Text of abstract
+
+\end{abstract}
+
+\begin{keyword}
+%% keywords here, in the form: keyword \sep keyword
+
+%% MSC codes here, in the form: \MSC code \sep code
+%% or \MSC[2008] code \sep code (2000 is the default)
+
+\end{keyword}
+
+\end{frontmatter}
 
 \section{Introduction}
+\label{intro}
 
 Penalized regression models provide a statistically appealing method to build prediction models from high-dimensional data sources. Since the 
 introduction of the LASSO for linear regression models \citep{tibshirani96}, the methodology has been extended to generalized linear regression models,
@@ -209,6 +246,7 @@ At this point we would like to assess the prediction performance of the lasso mo
 Once we have seen that this model is not very satisfactory, we can attempt to improve the model in two ways. First, we can fit an elastic net model rather than lasso (and use Natalia's search algorithm for that). And second, we can assess the stability of the lasso (and elastic net) models by stability selection and identify the most stable features (using Martin's stabilityselection.R script).
 
 \section{Resampling based prediction errors}
+\label{pec}
 
 Once the final prognostic model is selected, we need to assess its prediction accuracy for future patients, frequently also in comparison
 with established clinico-pathological prognostic markers. In many applications no independent validation data set is available.
