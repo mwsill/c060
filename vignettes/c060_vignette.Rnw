@@ -187,43 +187,47 @@ At this point we would like to assess the prediction performance of the lasso mo
 
 Once we have seen that this model is not very satisfactory, we can attempt to improve the model in two ways. First, we can fit an elastic net model rather than lasso (and use Natalia's search algorithm for that). And second, we can assess the stability of the lasso (and elastic net) models by stability selection and identify the most stable features (using Martin's stabilityselection.R script).
 
-\subsection{Resampling based Prediction errors}
-Once the final prognostic model is selected, we need to assess its prediction accuracy for future patients, and frequently to compare
-it with established clinico-pathological prognostic markers. In many applications no independent validation data set is available.
+\section{Resampling based prediction errors}
+
+Once the final prognostic model is selected, we need to assess its prediction accuracy for future patients, frequently also in comparison
+with established clinico-pathological prognostic markers. In many applications no independent validation data set is available.
 The same data set need to be used to develop and assess the prognostic model. This is even more problematic for high-dimensional data,
 where the risk of overfitting is much more present. Resampling-based methods can be used to unbiasedly estimate the predictive accuracy 
 of the prognostic model in this situation. This is also called internal validation or pre-validation.
 
 The \texttt{R} package \texttt{peperr} \citep{Porz2009} provides a modular framework for survival and binary endpoints, i.e. prognostic and
-classification models. Wrapper functions for new or customized prediction model algorithms can be defined and passed to the general call function.  
+classification models. Wrapper functions for new or customized prediction model algorithms can be defined and passed to the generic call function \texttt{peperr}.  
 In case of prognostic models, algorithm specific wrapper functions for model fitting, tuning and prediction are required.
-Wrapper functions for a few machine learning approaches are already implemented.
+Wrapper functions for selected machine learning approaches are already implemented.
 
 Prediction accuracy is per default assessed with prediction error curves based on the time-dependent Brier score \citep{graf99}. 
 But it is also possible to define and use customized accuracy measures.
 
 We defined additional wrapper functions for the \texttt{glmnet} algorithm for fitting (\texttt{fit.glmnet}) and tuning (\texttt{complexity.glmnet}) the model,
-and predicting survival probabilities (\texttt{predictProb.glmnet}) based on the estimated model and baseline hazard from the training data. 
+and predicting survival probabilities (\texttt{predictProb.glmnet}) based on the fitted model and the estimated baseline hazard from the training data. 
 
 We estimate the $L_1$-penalized Cox PH regression model for overall survival starting with the 10.000 most varying probe sets using \texttt{glmnet}. 
-The $.632+$ bootstrap estimator is calculated based on subsampling \citep{BS2008} using only 10 bootstrap samples for illustration.
+The $.632+$ bootstrap estimator is calculated based on subsampling \citep{BS2008} using only 20 bootstrap samples for illustration.
 
 <<peperr, echo=T, results=hide, cache=T>>=
 peperr_obj <- peperr(response=Surv(eset$os, eset$os_status), x=t(exprs(eset)),
                      fit.fun=fit.glmnet,args.fit=list(standardize=F, family="cox"),
                      complexity=complexity.glmnet, args.complexity=list(standardize=F, family="cox", nfolds=10),
                      trace=F, RNG="fixed",seed=0815, 
-                     indices=resample.indices(n=dim(eset)[2], sample.n = 10, method = "sub632"))
+                     indices=resample.indices(n=dim(eset)[2], sample.n = 20, method = "sub632"))
 @
 
-Bootstrap results can be visualized with the \texttt{plot.peperr.curves} function, which is a slightly modified version of \texttt{plot} function from the \texttt{peperr} package
-and allows to display the number still at risk.
+Individual bootstrap results can be visualized with the \texttt{plot.peperr} function from the \texttt{peperr} package showing the selected complexity parameters, 
+out-of-bag prediction error curves as well as the prediction error integrated over time, and the predictive partial log-likelihood (PLL) values. In order to calculate the predictive PLL values again an algorithm specific wrapper (here \texttt{PLL.coxnet}) needs to be defined.
+
+In addition, we provide a slightly modified version of the prediction error curves plot function from the \texttt{peperr} package which allows to display the number still at risk (\texttt{plot.peperr.curves}) as shown in figure \ref{fig:pec1}. 
 
 \begin{figure}
 <<peperrPlot, echo=T, results=hide, fig=TRUE, width=12, height=10>>=
 plot.peperr.curves(peperr_obj, at.risk=T)
 @
 \caption{Prediction error curves}
+\label{fig:pec1}
 \end{figure}
 
 The \texttt{peperr} package is designed for high-dimensional covariates data and allows for various types of parallel computations.
@@ -235,7 +239,7 @@ peperr_obj_parallel <- peperr(response=Surv(eset$os, eset$os_status), x=t(exprs(
                               complexity=complexity.glmnet, args.complexity=list(standardize=F, family="cox", nfolds=10),
                               trace=F, RNG="fixed",seed=0815, cpus=3, parallel=T, clustertype="SOCK", 
                               load.list=list(functions=c("basesurv")),
-                              indices=resample.indices(n=dim(eset)[2], sample.n = 10, method = "sub632"))
+                              indices=resample.indices(n=dim(eset)[2], sample.n = 20, method = "sub632"))
 @
 
 <<peperrParallelPlot, echo=F, results=hide, fig=F, width=12, height=10>>=
@@ -253,7 +257,7 @@ peperr_obj_parallel_mandatory  <- peperr(response=Surv(eset$os, eset$os_status),
                                                                                              penalty.factor=rep(0:1,times=c(1,dim(eset)[1]))),
                                           trace=F, RNG="fixed",seed=0815, cpus=3, parallel=T, clustertype="SOCK", 
                                           load.list=list(functions=c("basesurv")),
-                                          indices=resample.indices(n=dim(eset)[2], sample.n = 10, method = "sub632"))
+                                          indices=resample.indices(n=dim(eset)[2], sample.n = 20, method = "sub632"))
 @
 
 <<peperrMandatoryParallelPlot, echo=F, results=hide, fig=F, width=12, height=10>>=
@@ -261,17 +265,17 @@ lines(peperr_obj$attribute,perr(peperr_obj,"632p"),lty=1,col=6)
 @
 
 For classification models, the same wrapper functions for fitting and tuning the model are called.
-Model performance measures so far available are misclassification rate and Brier score. But other measures
-such as area under the ROC curve can be set up easiliy.
+Model performance measures shipped with the \texttt{peperr} packages are misclassification rate and Brier score.
 
-We  extended functionality of Brier score (\texttt{aggregation.brier}) and misclassification rate (\texttt{aggregation.misclass}) calculation for \texttt{glmnet} algorithm, and
-defined AUC under the ROC curve in addition with the function \texttt{aggregation.auc}. For binary responses, the \texttt{peperr} package lacks the same modular flexibility 
+We  extended functionality of the Brier score (\texttt{aggregation.brier}) and misclassification rate (\texttt{aggregation.misclass}) 
+calculation for the \texttt{glmnet} algorithm, and defined AUC under the ROC curve (\texttt{aggregation.auc}) as additional performance measure.
+For binary responses, the \texttt{peperr} package does not quite provide the same modular flexibility 
 as for time-to-event endpoints. The predicted class probability is calculated within the performance/aggregation function by calling the algorithm specific predict function.
-For each new algorithm the aggregation function has to be modified and overwritten.
+Whenever a new algorithm is incorporated the aggregation function has to be modified and overwritten accordingly.
 
-For illustration purpose only we use survival status as binary response variable and build the $L_1$-penalized logistic regression model.
+For illustration purpose only we use survival status as binary response variable and build the $L_1$-penalized logistic regression model with \texttt{glmnet}.
 All three prediction accuracy measures are calculated. Again, computations are run in parallel.
-Results of 10 bootstrap runs are displayed in plain boxplots.
+Results of 20 bootstrap runs are displayed in plain boxplots (figure \ref{fig:pebin1}).
 
 <<peperrBinaryParallel, echo=F, results=hide, cache=T>>=
 peperr_obj_parallel_binary_brier  <- peperr(response=eset$os_status, x=t(exprs(eset)),
@@ -327,7 +331,8 @@ pg   <- p + geom_boxplot(outlier.colour = rgb(0,0,0,0), outlier.size=0) + geom_j
         geom_hline(aes(yintercept=at, x=type, colour=error), hline_data, show_guide=TRUE) + opts(legend.position = "bottom")
 print(pg)
 @
-\caption{Classification error}
+\caption{Different bootstrap performance measures for binary classification}
+\label{fig:pebin1}
 \end{figure}
 
 \clearpage
