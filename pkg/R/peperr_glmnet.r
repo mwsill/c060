@@ -1,10 +1,9 @@
 ###############################################################
 # baseline survival/ hazard Breslow estimator
+# function essentially based on gbm:::basehaz.gbm
 ###############################################################
 basesurv <- function (response, lp, times.eval = NULL, centered = FALSE)
 {
-# function essentially based on gbm:::basehaz.gbm
-    if (centered) lp <- as.numeric(scale(lp,scale=F))
     if (is.null(times.eval)) times.eval <- sort(unique(response[,1]))
     
     t.unique <- sort(unique(response[,1][response[,2] == 1]))
@@ -15,14 +14,10 @@ basesurv <- function (response, lp, times.eval = NULL, centered = FALSE)
     }
 
     obj   <- approx(t.unique, cumsum(alpha), yleft=0, xout = times.eval, rule=2)
+
+    if (centered) obj$y <- obj$y * exp(mean(lp))
     obj$z <- exp(-obj$y)
-    
-    if (min(times.eval) > 0) {
-         obj$x <- c(0, obj$x)
-         obj$y <- c(0, obj$y)         
-         obj$z <- c(1, obj$z)
-    }
-            
+
     names(obj) <- c("times","cumBaseHaz","BaseSurv")
     return(obj)
 }
@@ -59,11 +54,11 @@ complexity.glmnet <- function (response, x, full.data, ...)
 
 predictProb.glmnet <- function (object, x, times, complexity,  ...) 
 {
-    require(glmnet)
+    require(glmnet)    
     lp       <- as.numeric(predict(object, newx=data.matrix(x),s=complexity, type="link"))
     basesurv <- basesurv(object$response,object$linear.predictor, sort(unique(times)))
     p        <- exp(exp(lp) %*% -t(basesurv$cumBaseHaz))
-
+    
     if (NROW(p) != NROW(x) || NCOL(p) != length(times)) 
         stop("Prediction failed")
     p
@@ -75,6 +70,7 @@ PLL.coxnet <- function(object, newdata, newtime, newstatus, complexity, ...)
    PLL <- glmnet:::coxnet.deviance(pred = NULL, Surv(newtime,newstatus), x = newdata, offset = NULL, weights = NULL, beta = coef(object,s=complexity)) 
    PLL / -2
 }
+
 
 ##################################################
 ###### classification aggregation functions   ####
@@ -187,7 +183,7 @@ plot.peperr.curves <- function(x,at.risk=TRUE,...) {
   }
   
   lines(x$attribute, x$null.model, type = "l", col = "blue", lwd = 2, lty = 1)
-  lines(x$attribute, perr(x), type = "l", lty = 1, lwd = 2)
+  lines(x$attribute, perr(x, "632p"), type = "l", col= "black", lty = 1, lwd = 2)
   lines(x$attribute, x$full.apparent, type = "l", col = "red", lty = 1, lwd = 2)
   legend(x = "topleft", col = c("blue", "black", "red", "light grey"), lwd=c(2,2,2,1), 
          lty = c(1, 1, 1, 1), legend = c("Null model", ".632+ estimate", "Full apparent", "Bootstrap samples"))
