@@ -10,9 +10,20 @@ stability.path <- function(y,x,mc.cores=getOption("mc.cores", 2L),size=0.632,ste
 	p <- ncol(x)
 	#draw subsets
   	subsets <- sapply(1:steps,function(v){sample(1:nrow(x),nrow(x)*size)})
-	res <- mclapply(1:steps,mc.cores=mc.cores,glmnet.subset,subsets,x,y
-                  ,lambda=fit$lambda,weakness,p,...)
-  	#merging
+  
+	# parallel computing depending on OS
+	# UNIX/Mac
+	if (.Platform$OS.type!="windows") {
+	  res <- mclapply(1:steps,mc.cores=mc.cores,glmnet.subset,subsets,x,y,lambda=fit$lambda,weakness,p,...)
+	} else {
+	  # Windows  
+	  cl  <- makePSOCKcluster(mc.cores)
+	  clusterExport(cl,c("glmnet","drop0"))
+	  res <- parLapply(cl, 1:steps,glmnet.subset,subsets,x,y,lambda=fit$lambda,weakness,p,...)
+	  stopCluster(cl)
+	}
+  
+  #merging
 	stabpath <- res[[1]]
 	qmat <- matrix(ncol=ncol(res[[1]]),nrow=steps)
 	qmat[1,] <- colSums(res[[1]])
