@@ -1,5 +1,5 @@
 % setwd("C:/Projekte/explained variation/peperr/CSDA/c060/pkg/vignettes")
-% setwd("~/Projekte_StatsMethods/c060/pkg/vignette")
+% setwd("~/Projekte_StatsMethods/c060_workcopy/pkg/vignette")
 % library(cacheSweave)
 % Sweave("c060_vignette.Rnw", driver = cacheSweaveDriver)
 % tools::texi2dvi("c060_vignette.tex", pdf=TRUE)
@@ -7,15 +7,26 @@
 \documentclass[preprint, 11pt, authoryear]{elsarticle}
 
 \usepackage{graphicx}
-%\usepackage{mathptmx}      % use Times fonts if available on your TeX system
-%\usepackage[authoryear]{natbib}
+\usepackage{mathptmx}      % use Times fonts if available on your TeX system
+\usepackage[authoryear]{natbib}
+\usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{amsfonts}
 \usepackage{hyperref}
+\usepackage{longtable}
+\usepackage{color}
+\usepackage{pst-all}
 
 % please place your own definitions here and don't use \def but
 % \newcommand{}{}
 \newcommand{\Scmd}[1]{\texttt{#1}} % For R/ S commands
 \newcommand{\R}{R}
+
+\definecolor{red}{rgb}{1,0.4,0.4}
+\definecolor{blue}{rgb}{0.4,0.4,1}
+\definecolor{green}{rgb}{0,0.5,0}
+\definecolor{gradbegin}{rgb}{0.6,0.1,0.6} % purple
+\newcommand{\commentMZ}[1]{\textit{\textbf{\red[Manuela: #1]}}}
 
 \journal{Computational Statistics \& Data Analysis}
 
@@ -44,12 +55,11 @@
 %% \address{Address\fnref{label3}}
 %% \fntext[label3]{}
 
-\setkeys{Gin}{width=\textwidth}% general figure width
+\setkeys{Gin}{width=\linewidth}% general figure width
 \SweaveOpts{prefix.string=figures/fig, eps=FALSE}
 %Because eps=FALSE, all graphics are created as pdf graphics only. This implies that the resulting tex document needs to be compiled with pdflatex rather than with latex.
 
 \title{C060 Vignette}
-
 \author{Martin Sill, Thomas Hielscher, Natalia Becker, Manuela Zucknick}
 
 \address{}
@@ -66,10 +76,8 @@
 
 \begin{keyword}
 %% keywords here, in the form: keyword \sep keyword
-
 %% MSC codes here, in the form: \MSC code \sep code
 %% or \MSC[2008] code \sep code (2000 is the default)
-
 \end{keyword}
 
 \end{frontmatter}
@@ -78,68 +86,114 @@
 \label{intro}
 
 Penalized regression models provide a statistically appealing method to build prediction models from high-dimensional data sources. Since the 
-introduction of the LASSO for linear regression models \citep{tibshirani96}, the methodology has been extended to generalized linear regression models,
-time-to-event endpoints etc. Various penalty functions besides $L_1$- and $L_2$-norm have been proposed to select features and/or estimate their effect.
+introduction of the lasso for linear regression models \citep{tibshirani96}, the methodology has been extended to generalized linear regression models,
+time-to-event endpoints \citep{tibshirani97} etc. In addition to the well-known $L_1$- (lasso) and $L_2$-norms (ridge) penalty functions, various other penalties have been proposed in recent years to select features and/or estimate their effects. In particular, we will use the elastic net penalty function \citep{zou05}, which is a linear combination of the $L_1$- and $L_2$-norms.
 
 With ever increasing data, the properties of the algorithm to actually fit the model have become almost as important as the statistical model itself. 
-In 2010, Friedman, Hastie and Tibshirani proposed a coordinate descent algorithm \citep{FHT2010} for generalized linear regression models, which was
-later on extended to penalized Cox PH regression models \citep{simon2011}. Due to its efficiency this algorithm is considered one of the state-of-the-art
-approaches to estimate penalized regression models with LASSO, ridge or elastic net penalty term. 
+In 2010, Friedman, Hastie and Tibshirani proposed a coordinate descent algorithm \citep{FHT2010} for generalized linear regression models, which has since then been extended to penalized Cox PH regression models \citep{simon2011}. Due to its efficiency this algorithm is considered one of the state-of-the-art
+approaches to estimate penalized regression models with lasso, ridge or elastic net penalty terms. 
 
 This algorithm has also been implemented in \R{} in the \texttt{glmnet} package. The package provides functions to tune and fit regression models, 
-plot the results, and make predictions. However, in practical applications, possibly lacking an independent validation data set, some additional features and routines are
-desirable to perform a more detailed analysis. We have assembled some functions that enhance the existing functionality of the \texttt{glmnet} package or
+plot the results, and make predictions. However, in practical applications, where often an independent validation data set is lacking, some additional features and routines are desirable as part of a complete data analysis. We have assembled some functions that enhance the existing functionality of the \texttt{glmnet} package or
 allow to use it within the framework of other existing \R{} packages. These functions have been useful in our daily work here at the German Cancer Research 
-Center where prognostic models are of particular interest. Therefore, we focus on penalized Cox PH regression models in this article. But most of the functions
-are applicable to all types of regression models provided by the \texttt{glmnet} package.
+Center where prognostic modelling of patient survival data is of particular interest. Therefore, for illustration purposes we focus on penalized Cox PH regression models in this article. But most of the functions are applicable to all types of regression models implemented in the \texttt{glmnet} package.
 
-We provide functions to perform stability selection \citep{MeinshausenBuehlmann2010} which allows to select the most influential features at a given error level, 
-alternative approaches to select the optimal parameter combination for elastic net penalties (Ref?),
-and wrapper functions to use resampling-based prediction error methods provided in the framework of the \R{} package \texttt{peperr} \citep{Porz2009} to assess the
-predictive accuracy.
+We provide \R{} functions to perform stability selection \citep{MeinshausenBuehlmann2010} in a computationally efficient way using \texttt{glmnet} which allows to select the most stable features at a given error level. We also provide an approach to select the optimal parameter combination ($\alpha$, $\lambda$) for elastic net penalties using an interval-search algorithm \citep{froehlich2005} which is often faster and more accurate than a standard grid search (Ref for a comparison study?). Another very useful addition for real-life applications of \texttt{glmnet} for building prognostic models is the provision of wrapper functions to allow the computation of resampling-based prediction error curves with the framework of the \R{} package \texttt{peperr} \citep{Porz2009}. The \texttt{peperr} package makes it computationally feasible to assess the
+predictive accuracy of a penalized Cox PH regression model via resampling methods even for very large-scale applications by employing parallel computing. We also provide the possibility to spead up stability selection by parallel computing using the functionalities of the \R{} base package \texttt{parallel}.
 
-Data from published gene expression studies are often deposited in public data repositories, for example on the Gene Expression Omnibus (GEO) website by the NCBI (National Center for Biotechnology Information): \url{http://www.ncbi.nlm.nih.gov/geo}. We find the Metzeler \textit{et al.} data \citep{metzeler08} under GEO accession number GSE12417.
+\section{Data application}
+Throughout this article we use the gene expression data set on cytogenetically normal acute myeloid leukemia (CN-AML) by \citet{metzeler08} and corresponding clinical data in order to illustrate a typical application of penalized Cox PH regression models with the aim of developing a prognostic model for patient survival while at the same time identifying the most influential gene expression features. To simulate the typical situation that only one data set is available for model training and evaluation, we only use the data set that was used as validation data in the original publication by \citet{metzeler08}. The data can be accessed from the Gene Expression Omnibus (GEO) data repository (\url{http://www.ncbi.nlm.nih.gov/geo}) by the National Center for Biotechnology Information (NCBI). We find the Metzeler \textit{et al.} data set under GEO accession number GSE12417.
 
-Here should follow a detailed description of 
-\begin{enumerate}
-\item the problem (what do we want to do)
-\item the existing methods and R software (what exists in glmnet package and which functions are missing)
-\item the data set
-\end{enumerate}
+The data set contains gene expression data for 79 patient samples measured with Affymetrix HG-U133 Plus 2.0 microarrays. The median survival time of these 79 patients was 17.6 months with 40\% censoring.
+
+\section{Methods and algorithms}
+\commentMZ{What we need here is not just the description of the statistical methods, but also of the specific algorithms that are implemented in the R package.}
+
+\subsection{Penalized generalized linear models and Cox models}\label{methods:penalized}
+An efficient implementation for fitting generalized linear models and Cox proportional hazards models with regularization by the lasso or elastic net penalty terms is provided by the \R{} package \texttt{glmnet} \citep{FHT2010, simon2011}. This implementation uses a coordinate descent algorithm for fitting the models for a specified penalty parameter value $\lambda$. The computation of an entire regularization path across a range of values $\{\lambda_1,\lambda_2...,\lambda_k\}$ with \texttt{glmnet} is very fast, because previously computed solutions for $\{\lambda_1,...,\lambda_{j-1}\}$ are used as a 'hot' starting value for the computation of $\lambda_j$.
+
+Models are fitted by maximizing the penalized log-likelihood function for generalized linear models and the penalized partial log-likelihood for Cox models. Cross-validation can be performed to decide which model (i.e. which penalty parameter values) to choose by using the cross-validated (partial) log-likelihood as the loss function.
+\commentMZ{Is the approach by \citet{verweij93} used for Cox models?}
+\commentMZ{The remainder of the text in this section \ref{methods:penalized} is from the Benner et al. (2010) paper and needs to be rewritten and adapted to this manuscript.}
+
+The penalized (partial) log-likelihood is given by
+\begin{equation}\label{pen.part.likelihood}
+l_n(\boldsymbol\beta)- \sum_{j=1}^p  p_{\lambda^*}(|\beta_j|)
+\end{equation}
+where $l_n(\boldsymbol\beta)$ denotes the (partial) log-likelihood given $n$ observations.
+The dimension of the parameter vector $\boldsymbol\beta$ is $p$ and $p_\lambda(|\cdot|)$ is the penalty function with tuning parameter $\lambda^*$. Correspondingly, the objective function employed in \texttt{glmnet} is (with $\lambda = \lambda^*/n$):
+\begin{equation}\label{obj.fun}
+- l_n(\boldsymbol\beta)/n + \sum_{j=1}^p  p_\lambda(|\beta_j|).
+\end{equation}
+
+\subsection{$L_2$-penalized Cox regression}
+Penalized maximum likelihood estimation in Cox regression with the ridge penalty
+\begin{equation}\label{ridge}
+p_\lambda(|\beta|)=\lambda\beta^2
+\end{equation}
+was introduced by \citet{verweij94}.
+Ridge penalized regression does not perform model selection and results in downwardly biased parameter estimates.
+On the other hand, it has been found to produce models with good prediction performance in high-dimensional genomic
+applications \citep[e.g.][]{bovelstad07}.
+
+\subsection{$L_1$-penalized Cox regression}
+\Citet{tibshirani97} proposed to use an $L_1$-penalized Cox model with
+\begin{equation}
+p_\lambda(|\beta|)=\lambda | \beta |
+\end{equation}
+and described a technique, called the lasso for ''least absolute shrinkage and selection operator'', for parameter estimation.
+The $L_1$-penalty has the advantage over the $L_2$-penalty of shrinking some of the coefficients to zero, i.e. it has an in-built variable selection procedure.
+
+\subsection{The elastic net}
+\Citet{zou05} introduced the elastic net, which employs a combination of the $L_1$- and $L_2$-penalty
+\begin{equation}\label{enet}
+p_{\lambda_1,\lambda_2}(|\beta|)=\lambda_1 | \beta | + \lambda_2 \beta ^2.
+\end{equation}
+\Citet{zou05} rescale the initial solutions from the optimization of the doubly-penalized log-likelihood function by the factor $1 + \lambda_2$, in order to reduce the effect of the double shrinkage.
+The elastic net performs variable selection and parameter estimation equivalently to the lasso.
+But the additional $L_2$-penalty term distributes the weight to more variables, such that the elastic net tends to select more variables than the lasso. 
+This is especially the case in situations with high correlation, where the lasso would select only one variable of a set of highly correlated variables.
+
+Throughout this manuscript we use an alternative parametrization of the elastic net penalty function equivalently to the formulation used in the \texttt{glmnet} package:
+\begin{equation}\label{enet2}
+p_{\alpha,\lambda}(|\beta|)= \lambda\times ( (1-\alpha)\frac{1}{2} |\beta|^2 + \alpha |\beta|).
+\end{equation}
+
+\subsubsection{The interval-search algorithm to select the optimal elastic net parameter combination}
+
+\subsection{Stability selection}
+\subsection{Prediction error curves for survival models}
 
 <<setup, echo=F, results=hide>>=
 rm(list=ls())
 
-#################################################
-### load libraries
-#################################################
+# load libraries
 library(cacheSweave)
 library(Biobase)
 library(genefilter)
-library(glmnet)
-library(parallel)
-library(peperr)
 library(ggplot2)
 library(GEOquery)
 library(limma)
+library(xtable)
 
-#########################################
+library(glmnet)
+require(penalizedSVM)
+library(parallel) #for stabilityselection.R
+library(peperr) #for peperr_glmnet.R
+library(tgp) #for EPSGO.R
+library(mlegp) #for EPSGO.R
+library(pamr) #for tune.glmnet.interval.R
+
 # R functions required
-#########################################
 source("../R/peperr_glmnet.r")
 source("../R/stabilityselection.R")
+source("../R/tune_glmnet_interval.R")
+source("../R/EPSGO.R")
 
-#################################################
-### set folder for automatically created figures
-### to be specified in \SweaveOpts
-#################################################
 dir.create("figures",showWarnings = FALSE)
 
-#########################################
-# set cache folder
-# needs different driver, to run as:
+# set cache folder; needs different driver, to run as:
 # Sweave("c060_vignette.Rnw",driver=cacheSweaveDriver)
-#########################################
 setCacheDir("cache")
 @
 
@@ -172,23 +226,18 @@ if (file.exists("Rdata/expressionSet.Rdata")) {
 @
 
 <<preprocessData, echo=F, results=hide>>=
-##########################################
-### unspecific filtering
-#   select most varying probe sets
-##########################################
+# unspecific filtering: select most varying probe sets
 rowvars    <- rowVars(exprs(geo_exprs_data))
 topprobes   <- which(rowvars>=sort(rowvars,decreasing=T)[10000])
 eset       <- geo_exprs_data[topprobes,]     
 @
 
 \clearpage
-\section{Lasso penalised Cox PH regression model} 
+\section{Application and demonstration of software}
+\subsection{Starting off: Lasso-penalised Cox model} 
 
 \begin{figure}
 <<glmnet, echo=F, results=hide, fig=TRUE, height=4>>=
-##########################################
-#   glmnet
-##########################################
 set.seed(1234)
 y <- cbind(time=pData(eset)$os, status=pData(eset)$os_status)
 cvres <- cv.glmnet(y=y, x=t(exprs(eset)), family="cox", nfolds=10)
@@ -200,19 +249,24 @@ names.cof <- rownames(cof)
 cofn <- cof[which(cof!=0)]
 names(cofn) <- names.cof[which(cof!=0)]
 @
-\caption{\label{fig:cvlasso}Cross-validated partial likelihood function, including upper and lower standard deviations, as a function of $\log{\lambda}$ for the AML data set.}
+\caption{\label{fig:cvlasso}Cross-validated partial log-likelihood function, including upper and lower standard deviations, as a function of $\log{\lambda}$ for the AML data set.}
 \end{figure}
 
-We tune the lasso penalty parameter by 10-fold cross-validation using the cross-validated partial log-likelihood function as the loss function. The resulting penalty parameter value leads to a final lasso model with \Sexpr{length(cofn)} selected features:
+We can apply the \texttt{glmnet} function to fit a lasso-penalized Cox model to the CN-AML data set. The function call with default penalty parameter settings will fit the lasso model for 100 $\lambda$ data derived values:
+<<glmnet0, echo=TRUE, results=hide>>=
+fit <- glmnet(y=y, x=t(exprs(eset)), family="cox")
+@
+ 
+We tune the lasso penalty parameter by 10-fold cross-validation using the \texttt{cv.glmnet} function. The loss function, i.e. the cross-validated partial log-likelihood, is shown in Figure \ref{fig:cvlasso} including upper and lower standard deviations as a function of $\log{\lambda}$ for the AML data set. The penalty parameter value minimizing the loss function is $\lambda =$\Sexpr{round(cvres$lambda.min, 3)} and corresponds to a final lasso model with the following \Sexpr{length(cofn)} selected features:
 <<glmnet2, echo=F, results=verbatim>>=
 print(cofn)
 #cofn.ix <- predict(res, type="nonzero", s=cvres$lambda.min)
 @
 
-The selected features are highlighted as red lines in the coefficient paths shown in Figure \ref{fig:coefpath}.
+The selected features are highlighted as red lines in the coefficient paths shown in Figure \ref{fig:coefpath}. The coefficient path shows the development of the regression coefficient estimates with increasing regularization.
 
 \begin{figure}
-<<glmnet3, echo=F, results=hide, fig=TRUE>>=
+<<glmnet3, echo=F, results=hide, fig=TRUE, height=7, width=7>>=
 bet <- res$beta[match(names(cofn), rownames(res$beta)),]
 par(mar=c(4,4,2.5,1), mgp=c(2.5,1,0), mfrow=c(2,2))
 
@@ -240,12 +294,12 @@ abline(v=res$dev.ratio[match(cvres$lambda.1se, cvres$lambda)], lty=3)
 \caption{\label{fig:coefpath}Coefficient paths for lasso penalised Cox PH regression model applied to the AML data set.}
 \end{figure}
 
-\clearpage
-At this point we would like to assess the prediction performance of the lasso model. We can do this with bootstrapped prediction error curves and corresponding integrated Brier score values (see Thomas' functions adapted for peperr/pec).
+%\clearpage
+%At this point we would like to assess the prediction performance of the lasso model. We can do this with bootstrapped prediction error curves and corresponding integrated Brier score values (see Thomas' functions adapted for peperr/pec).
 
-Once we have seen that this model is not very satisfactory, we can attempt to improve the model in two ways. First, we can fit an elastic net model rather than lasso (and use Natalia's search algorithm for that). And second, we can assess the stability of the lasso (and elastic net) models by stability selection and identify the most stable features (using Martin's stabilityselection.R script).
+%Once we have seen that this model is not very satisfactory, we can attempt to improve the model in two ways. First, we can fit an elastic net model rather than lasso (and use Natalia's search algorithm for that). And second, we can assess the stability of the lasso (and elastic net) models by stability selection and identify the most stable features (using Martin's stabilityselection.R script).
 
-\section{Resampling based prediction errors}
+\subsection{Resampling based prediction errors}
 \label{pec}
 
 Once the final prognostic model is selected, we need to assess its prediction accuracy for future patients, frequently also in comparison
@@ -395,17 +449,10 @@ print(pg)
 \end{figure}
 
 \clearpage
-\section{Elastic net penalised Cox PH regression model}
-
-\section{Stability selection}
+\subsection{Stability selection}
 
 \begin{figure}
 <<stabilitySelection, echo=F, results=hide, fig=TRUE>>=
-##########################################
-### try out glmnetSS.R
-#   stability selection with glmnet
-##########################################
-
 set.seed(1234)
 y <- cbind(time=pData(eset)$os, status=pData(eset)$os_status)
 ### parallel computing not enabled on Windows
@@ -425,7 +472,162 @@ print(sel$stable)
 @
 
 \clearpage
-\section{Summary}
+\subsection{Elastic net penalised Cox PH regression model}
+
+\subsubsection{Tune both $\lambda$ and $\alpha$ by interval search}
+
+<<interval_search_cox_setup, echo=F, results=hide>>=  
+  x <- t(exprs(eset))
+  y <- cbind(time=pData(geo_exprs_data)$os,status=pData(geo_exprs_data)$os_status)
+  
+  Q.func <- "tune.glmnet.interval"
+  
+  # bounds for alpha [0,1]
+  bounds <- t(data.frame(alpha=c(0, 1)))
+  colnames(bounds) <- c("lower", "upper")  
+  parms.coding <- "none"
+  seed <- 1234
+  type.measure <- 'deviance'
+    
+  family <- "cox"
+  nfolds <- 10
+  show <- "none"
+  fminlower <- -100  
+  type.min <- "lambda.1se"
+  verbose <- TRUE
+@
+
+The task is to find such a setting of tuning parameters $\left(\alpha,\lambda\right)$, for which the \Sexpr{nfolds}-fold cross validation error of the model is minimal.
+Instead of using a fixed grid, an interval search approach is applied. REFF 
+
+The parameter space of tuning parameters is defined as follows:
+
+<<interval_search_cox_pre, echo=F>>=
+print(bounds)
+@
+The second tuning parameter $\lambda$ will be found for each given $\alpha$ via regularization path.  Thus, the two dimensional parameter space has the form $\left(0, 1\right) \times \mathbb{R}$. The seed is \Sexpr{seed}. For each given $\alpha$ an optimal lambda is definded as largest value of lambda such that error is within 1 standard error of the minimum. (parameter  type.min = 'lambda.1se').
+
+<<interval_search_cox, echo=F, results=hide, cache=TRUE>>=
+  # fix folds for each model
+  set.seed(seed)
+  foldid <- my.balanced.folds(class.column.factor=y[,2], cross.outer=nfolds)
+  
+  print("start interval search")
+  fit <- EPSGO(Q.func, 
+             bounds=bounds, 
+             parms.coding=parms.coding, 
+             show=show, N=NULL,   
+             seed=seed, 
+             fminlower=fminlower,
+             # Q.func arguments
+  					 x=x, y=y, family=family, 
+             #nfolds=nfolds,  
+             foldid=foldid,
+             type.min=type.min,
+             type.measure=type.measure,
+             verbose=verbose)
+  names(fit) 
+ 
+  print("chose the model with min num of FS ")      
+  print("# FS: ")
+  sel.models <- sapply(fit$model.list, "[", "model") [fit$Ytrain == fit$fmin ]
+  sel.alpha <- fit$xmin
+  sel.error <- fit$fmin		
+  		
+  out <- list(model=sel.models, alpha=sel.alpha, error=sel.error) 
+  save(fit, out, file="Rdata/fit_interval_search.RData") 
+@
+
+<<interval_search_cox_extract, echo=F, results=hide>>=
+# 
+alphas <- fit$Xtrain[,1]
+lambdas <- unlist(sapply(sapply(fit$model, "[", 2), "[", 5))
+deviances <- fit$Ytrain
+# number of selected features in the models; dfs
+n.features <- unlist(sapply(sapply(fit$model, "[", 2), "[", 3))
+
+opt.alpha <- out$alpha
+opt.lambda <- out$model[[1]]$lambda
+
+summary_int_search <- as.data.frame(cbind(alpha=alphas,lambda=lambdas,deviance=deviances,n.features=n.features))
+rownames(summary_int_search) <- c(1:nrow(summary_int_search))
+@
+
+<<label=tab_int_search, echo=FALSE, results=tex>>=                             
+toPrint <- xtable(summary_int_search[1:10,], caption = "Summary of visited points in the parameter space", label = "tab:sum_int_search", digits = c(0,5, 7, 5, 0))
+print(toPrint, table.placement = "tbp", caption.placement = "top")
+@
+The visited points in the parameter space ($\alpha$, $\lambda$) and resulting cross-validated deviances are summarised in table~\ref{tab:sum_int_search}.
+
+The minimal mean cross-validated deviance over the folds of \Sexpr{round(out$error,3)} is reached for optimal parameter pair $(\alpha, \lambda ) $ = (\Sexpr{round(opt.alpha,3)},\Sexpr{round(opt.lambda,3)}). 
+
+The 'visited' points with corresponding deviance and number of selected features in each model are presented in figure~\ref{tab:sum_int_search}. 
+
+<<interval_search_cox_fit_opt, echo=F, results=hide>>=
+#select the model with optimal parameters from the object fit
+# 
+f <- fit$model.list[unlist(sapply(fit$model.list,"[",1)) == fit$fmin]
+if (length(f)>1) print("more than one optimal model!")
+#take the first model
+f1 <- f[[1]]$model
+
+# fit the model with found optimal alpha
+set.seed(seed)
+cvres <- cv.glmnet(y=y, x=t(exprs(eset)), family="cox", nfolds=10, alpha=opt.alpha)
+res <- cvres$glmnet.fit
+
+cof <- coef(res, s=opt.lambda)
+names.cof <- rownames(cof)
+cofn <- cof[which(cof!=0)]
+names(cofn) <- names.cof[which(cof!=0)]                     
+@
+
+<<>>=
+summary(cofn)
+head(sort(cofn))
+tail(sort(cofn))
+@
+
+A feature selected by the stability algorithm is in the set of selected features
+<<>>=
+'206932_at' %in% names.cof
+@
+
+
+\textbf{TODO : plots}
+
+\begin{figure}
+<<interval_search_cox_out_plot, echo=F, results=hide, fig=TRUE, height=4>>=
+plot(cvres)
+@
+\caption{\label{fig:interval_search} \Sexpr{type.measure} as a function of log($\alpha$) for the AML data set. }
+\end{figure}
+
+% 
+% 
+% \begin{figure}
+% <<interval_search_cox_out_plot2, echo=F, results=hide, fig=TRUE, height=4>>=
+% 
+% par(las=3)
+% plot(cbind(alphas,deviances), ylab="Partial Likelihood Deviance", xlab="alpha", type="p")
+% axis(3,at=alphas, tick = TRUE, labels=n.features,cex.axis=0.7 )
+% 
+% abline(v=out$alpha, col="red")
+% 
+% 
+% 
+% plot(cbind(alphas,lambdas),  xlab="alpha", ylab="lambda", type="p")
+% 
+% @
+% \caption{\label{fig:interval_search2} \Sexpr{type.measure} as a function of $\alpha$ for the AML data set. err ewr 22222}
+% \end{figure}
+% 
+% 
+% 
+%
+
+\clearpage
+\section{Conclusions}
 
 \section{Session Information}
 The version number of \R{} and packages loaded for generating the vignette were:
