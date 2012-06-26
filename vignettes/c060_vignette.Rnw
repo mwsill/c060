@@ -31,6 +31,7 @@
 \journal{Computational Statistics \& Data Analysis}
 
 \begin{document}
+\SweaveOpts{concordance=TRUE}
 
 \begin{frontmatter}
 
@@ -162,8 +163,26 @@ p_{\alpha,\lambda}(|\beta|)= \lambda\times ( (1-\alpha)\frac{1}{2} |\beta|^2 + \
 \subsubsection{The interval-search algorithm to select the optimal elastic net parameter combination}
 
 \subsection{Stability selection}
-\subsection{Prediction error curves for survival models}
+The stability selection proposed by \citet{MeinshausenBuehlmann2010} is a general approach that combines variable selection methodssuch as $L_1$ penalized Cox models with resampling. By applying the corresponding variable selection method to subsamples that were drawn without replacement, selection probabilities for each feature can be estimated. These selection probabilties are used to define a set of stable features. \citet{MeinshausenBuehlmann2010} provide a theoretical framework for controling Type I error rates of falsely assigning features to the estimated set of stable features. The selection probability of each feature along the regularization path, e.g. the range of possible penalization parameters $\Lambda=\{\lambda_1,\lambda_2...,\lambda_k\}$, is called stability path.
+Given an arbitrary threshold $\pi_{thr} \in (0.5,1)$ and the set of penalization parameters $\Lambda$, the set of stable features estimated with the stability selection is:
+\begin{equation} 
+ \hat{S}_{\beta}^{stable}=\left\{i: \max_{\lambda_{j} \in \Lambda} \hat{\Pi}_{i}^{\lambda_{j}} \geq \pi_{thr} \right\},
+\end{equation}
+where $\hat{\Pi}_{i}^{\lambda_{j}}$ denotes the estimated selection probability of the $i$th feature at the $j$th $\lambda$. 
+Then according to Theorem 1 in \citet{MeinshausenBuehlmann2010}, the expected number of falsely selected features $E(V)$ will be bounded by:
+\begin{equation}\label{stab}
+E(V) \leq \frac{1}{(2\pi_{thr}-1)} \frac{q^{2}_{\Lambda}}{p},
+\end{equation}
+where $q_{\Lambda}$ the average of the number of non-zero coefficients w.r.t. to the drawn subsamples.  
+Interpreting Equation \ref{stab} the expected number of falsely selected coefficients decreases by either reducing the average number of selected coefficients $q_{\Lambda}$ or by increasing the threshold $\pi_{thr}$. Suppose that $\pi_{thr}$ is fixed, then the stability selection controls $E(V)$ as long as the average number of selected coefficients is less then $e_{\Lambda}$. 
+This is an upper bound 
+\begin{equation}
+e_{\Lambda} = \sqrt{E(V)p(2\pi_{thr}-1)},
+\end{equation}
+which can be controlled by reducing the length of the regularization path $\Lambda$. In multiple testing the expected number of falsely selected variables is also known as the per-family error rate (PFER) and if divided by the total number of variables $p$ it will become the per-comparison error rate (PCER) \cite{Dudoit2003}. The stability selection allows to control these Type I error rates. For instance, suppose the threshold $\pi_{thr} = 0.8$ is fixed, then
+choosing $\Lambda$ such that $q_{\Lambda} \leq \sqrt{0.6p}$ will control $E(V)=1$. Moreover, by choosing $\Lambda$ so that $q_{\Lambda} \leq \sqrt{0.6p\alpha}$ will control the family wise error rate (FWER) at level $\alpha$, $P(|V|>0) \leq \alpha$.
 
+\subsection{Prediction error curves for survival models}
 <<setup, echo=F, results=hide>>=
 rm(list=ls())
 
@@ -185,10 +204,10 @@ library(mlegp) #for EPSGO.R
 library(pamr) #for tune.glmnet.interval.R
 
 # R functions required
-source("../R/peperr_glmnet.r")
-source("../R/stabilityselection.R")
-source("../R/tune_glmnet_interval.R")
-source("../R/EPSGO.R")
+source("~/c060/pkg/R/peperr_glmnet.r")
+source("~/c060/pkg/R/stabilityselection.R")
+source("~/c060/pkg/R//tune_glmnet_interval.R")
+source("~/c060/pkg/R/EPSGO.R")
 
 dir.create("figures",showWarnings = FALSE)
 

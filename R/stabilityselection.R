@@ -5,7 +5,7 @@
 require(glmnet)
 require(parallel)
 
-stability.path <- function(y,x,mc.cores=getOption("mc.cores", 2L),size=0.632,steps=100,weakness=1,...){
+stability.path <- function(y,x,size=0.632,steps=100,weakness=1,mc.cores=getOption("mc.cores", 2L),...){
 	fit <- glmnet(x,y,...)
 	p <- ncol(x)
 	#draw subsets
@@ -61,7 +61,6 @@ stability.selection <- function(stabpath,fwer,pi_thr=0.8){
 #plot penalization and stability path 
 plot.stabpath <- function(stabpath, fwer, pi_thr=0.8, xvar=c("lambda", "norm", "dev"), col.all="black", col.sel="red",...){
   sel <- stability.selection(stabpath,fwer,pi_thr)
-  
   beta = as.matrix(stabpath$fit$beta)
   p <- dim(beta)[1]
   which = nonzeroCoef(beta)
