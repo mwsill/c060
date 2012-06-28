@@ -4,7 +4,7 @@
 Stability path for glmnet models
 }
 \description{
-The function calculates the stability path for glmnet models
+The function calculates the stability path for glmnet models, e.g. the selection probabilities of the features along the range of regularization parameters.
 }
 \usage{
 stability.path(y,x,size=0.632,steps=100,weakness=1,mc.cores=getOption("mc.cores", 2L),...)
@@ -12,47 +12,110 @@ stability.path(y,x,size=0.632,steps=100,weakness=1,mc.cores=getOption("mc.cores"
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{y}{
-response variable.
+response variable. Like for the glment function: Quantitative for ‘family="gaussian"’ or
+          ‘family="poisson"’ (non-negative counts). For
+          ‘family="binomial"’ should be either a factor with two
+          levels, or a two-column matrix of counts or proportions. For
+          ‘family="multinomial"’, can be a ‘nc>=2’ level factor, or a
+          matrix with ‘nc’ columns of counts or proportions. For
+          ‘family="cox"’, ‘y’ should be a two-column matrix with
+          columns named 'time' and 'status'. The latter is a binary
+          variable, with '1' indicating death, and '0' indicating right
+          censored. The function ‘Surv()’ in package ‘survival’
+          produces such a matrix
 }
   \item{x}{
-matrix of predictor variables.
+input matrix. Like for the glmnet function:
+of dimension nobs x nvars; each row is an
+observation vector. Can be in sparse matrix format (inherit
+from class ‘"sparseMatrix"’ as in package ‘Matrix’; not yet
+available for ‘family="cox"’)
 }
   \item{size}{
-proportion of samples drawn in every subsample.
+proportion of samples drawn in every subsample used for the stability selection.
 }
   \item{steps}{
-number of subsamples.
+number of subsamples used for the stability selection.
 }
   \item{weakness}{
-weakness parameter for the randomised lasso.
+weakness parameter used for the randomised lasso as described in Meinshausen and B\"uhlmann (2010). 
+For each subsample the features are reweighted by a random weight uniformly sampled in [weakness,1].
+This additional randomisation leads to a more consistent estimation of the stable set of features.
 }
   \item{mc.cores}{
-number of cores used for the parallelization
+number of cores used for the parallelization. For unix like system the parallelization is done by forking using the function \texttt{mclapply}. For windows systems socket cluster are used. 
 }
   \item{...}{
-further arguments that are passed to glmnet. 
+further arguments that are passed to the \texttt{glmnet} function. 
 }
 }
 \description{
-performs stability selection...
+calculates the stability path by first generating subsets and then uses the glmnet function to calculate the regularization path for each subset. The resulting regularization paths are then merged to form the stability path.
 }
 \value{
-returns a list...
-  \item{}{}
-  \item{}{}
-  \item{}{}
+an object of class "stabpath", which is a list of three objects
+  \item{fit}{
+  the fit object of class "glmnet" as returned from the glmnet function when applied to the complete data set.
+  }
+  \item{stabpath}{
+  an object of class "dgCMatrix" which represents the stability path.
+  }
+  \item{qs}{
+  a vector holding the values of the average number of non-zero coefficients w.r.t to the lambdas in the regularization path.
+  }
 }
 \author{
 Martin Sill \
 \email{m.sill@dkfz.de}
 }
 \references{
-Meinshausen and B\"uhlmann, Stability Selection 
+Meinshausen N. and B\"uhlmann P. (2010), Stability Selection, Journal of the Royal Statistical Society: Series B (Statistical Methodology) Volume 72, Issue 4, pages 417–473.
 }
-\seealso{ \code{\link{glmnet}}
+\seealso{ \code{\link{glmnet},\link{stability.selection},\link{plot.stabpath}}
 }
-
 \examples{
-}
+#gaussian
+set.seed(1234)
+x=matrix(rnorm(100*1000,0,1),100,1000)
+y <- x[1:100,1:1000]%*%c(rep(2,5),rep(-2,5),rep(.1,990))
++matrix(rnorm(100*10,0,.1),10,10) 
+res <- stability.path(y,x,weakness=1,mc.cores=2)
+plot(res)
 
+#binomial
+y=sample(1:2,100,replace=TRUE)
+res <- stability.path(y,x,weakness=1,mc.cores=2,family="binomial")
+plot(res)
+    
+#multinomial
+y=sample(1:4,100,replace=TRUE)
+res <- stability.path(y,x,weakness=1,mc.cores=2,family="multinomial")
+plot(res)
+    
+#poisson
+N=100; p=1000
+nzc=5
+x=matrix(rnorm(N*p),N,p)
+beta=rnorm(nzc)
+f = x[,seq(nzc)]%*%beta
+mu=exp(f)
+y=rpois(N,mu)
+res <- stability.path(y,x,weakness=1,mc.cores=2,family="poisson")
+plot(res)
+
+#Cox
+library(survival)
+set.seed(10101)
+N=100;p=1000
+nzc=p/3
+x=matrix(rnorm(N*p),N,p)
+beta=rnorm(nzc)
+fx=x[,seq(nzc)]%*%beta/3
+hx=exp(fx)
+ty=rexp(N,hx)
+tcens=rbinom(n=N,prob=.3,size=1)
+y=cbind(time=ty,status=1-tcens)
+res <- stability.path(y,x,weakness=1,mc.cores=2,family="cox")
+plot(res)
+}
 \keyword{stability selection}
