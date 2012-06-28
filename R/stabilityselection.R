@@ -24,12 +24,12 @@ stability.path <- function(y,x,size=0.632,steps=100,weakness=1,mc.cores=getOptio
 	}
   
   #merging
-	stabpath <- res[[1]]
+	stabpath <- as.matrix(res[[1]])
 	qmat <- matrix(ncol=ncol(res[[1]]),nrow=steps)
-	qmat[1,] <- colSums(res[[1]])
+	qmat[1,] <- colSums(as.matrix(res[[1]]))
 	for(i in 2:length(res)){
-  		qmat[i,] <- colSums(res[[i]])
-		stabpath <- stabpath + res[[i]]
+  		qmat[i,] <- colSums(as.matrix(res[[i]]))
+		stabpath <- stabpath + as.matrix(res[[i]])
 	}
 	stabpath <- stabpath/length(res)
 	qs <- colMeans(qmat)
