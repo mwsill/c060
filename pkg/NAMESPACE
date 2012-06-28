@@ -1,0 +1,11 @@
+export(stability.path,
+       plot.stabpath,
+       stability.selection,
+       aggregation.auc,
+       complexity.glmnet,
+       fit.glmnet,
+       PLL.coxnet,
+       plot.peperr.curves,
+       predictProb.glmnet)
+
+
