@@ -49,7 +49,7 @@ Meinshausen N. and B\"uhlmann P. (2010), Stability Selection, Journal of the Roy
 #gaussian
 set.seed(1234)
 x=matrix(rnorm(100*1000,0,1),100,1000)
-y <- x[1:100,1:1000]%*%c(rep(2,5),rep(-2,5),rep(.1,990))
+y <- x[1:100,1:1000]\%*\%c(rep(2,5),rep(-2,5),rep(.1,990))
 +matrix(rnorm(100*10,0,.1),10,10) 
 res <- stability.path(y,x,weakness=1,mc.cores=2)
 stability.selection(res,fwer=.5)
