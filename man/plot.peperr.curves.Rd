@@ -45,3 +45,5 @@ plot(peperr.object)
 }
 }
 \keyword{models} \keyword{regression} \keyword{survival}
+
+\seealso{\code{\link[peperr]{peperr}}}
