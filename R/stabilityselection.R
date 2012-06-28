@@ -104,19 +104,18 @@ plot.stabpath <- function(stabpath,fwer=0.5,pi_thr=0.6, xvar=c("lambda", "norm",
   cols[sel$stable] <- col.sel
   lwds <- rep(1,p)
   lwds[sel$stable] <- 2
-  #if(!class(stabpath$fit)[1]=="multnet"){
+  if(!class(stabpath$fit)[1]=="multnet"){
   par(mfrow=c(2,1))
   matplot(y=t(beta), x=index
           ,type="l",col=cols,lwd=lwds,lty=1,ylab=expression(paste(beta[i]))
           ,xlab=iname,main="Penalization Path",cex.lab=1,cex.axis=1,...)
-  #}
+  }
   matplot(y=as.matrix(t(stabpath$stabpath)), x=index
           ,type="l",col=cols,lwd=lwds,lty=1,ylab=expression(paste(hat(Pi)))
           ,xlab=iname,main="Stability Path",ylim=c(0,1),cex.lab=1,cex.axis=1,...)
   abline(h=pi_thr,col="darkred",lwd=1,lty=1)
   abline(v=index[sel$lpos],col="darkred",lwd=1,lty=1)
   #text(x=20,y=0.9,paste(expression(paste(lambda)),"=",paste(round(sel[[2]],digits=3)),sep=""),cex=0.75)
-  
   return(sel)
 }
 

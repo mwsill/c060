@@ -9,7 +9,6 @@ Given a desired family-wise error rate (FWER) and a stability path calculated wi
 \usage{
 plot.stabpath(stabpath, fwer=0.5,pi_thr=0.6, xvar=c("lambda", "norm", "dev"), col.all="black", col.sel="red",...)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{stabpath}{
  an object of class "stabpath" as returned by the function \texttt{stability.path}.
@@ -59,7 +58,7 @@ Meinshausen N. and B\"uhlmann P. (2010), Stability Selection, Journal of the Roy
 #gaussian
 set.seed(1234)
 x=matrix(rnorm(100*1000,0,1),100,1000)
-y <- x[1:100,1:1000]%*%c(rep(2,5),rep(-2,5),rep(.1,990))
+y <- x[1:100,1:1000]\%*\%c(rep(2,5),rep(-2,5),rep(.1,990))
 +matrix(rnorm(100*10,0,.1),10,10) 
 res <- stability.path(y,x,weakness=1,mc.cores=2)
 plot(res,fwer=.5)

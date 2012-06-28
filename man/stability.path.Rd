@@ -11,7 +11,7 @@ stability.path(y,x,size=0.632,steps=100,weakness=1,mc.cores=getOption("mc.cores"
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{y}{
+\item{y}{
 response variable. Like for the glment function: Quantitative for ‘family="gaussian"’ or
           ‘family="poisson"’ (non-negative counts). For
           ‘family="binomial"’ should be either a factor with two
@@ -76,8 +76,8 @@ Meinshausen N. and B\"uhlmann P. (2010), Stability Selection, Journal of the Roy
 \examples{
 #gaussian
 set.seed(1234)
-x=matrix(rnorm(100*1000,0,1),100,1000)
-y <- x[1:100,1:1000]%*%c(rep(2,5),rep(-2,5),rep(.1,990))
+x <- matrix(rnorm(100*1000,0,1),100,1000)
+y <- x[1:100,1:1000]\%*\% c(rep(2,5),rep(-2,5),rep(.1,990))
 +matrix(rnorm(100*10,0,.1),10,10) 
 res <- stability.path(y,x,weakness=1,mc.cores=2)
 plot(res)
@@ -97,7 +97,7 @@ N=100; p=1000
 nzc=5
 x=matrix(rnorm(N*p),N,p)
 beta=rnorm(nzc)
-f = x[,seq(nzc)]%*%beta
+f = x[,seq(nzc)]\%*\%beta
 mu=exp(f)
 y=rpois(N,mu)
 res <- stability.path(y,x,weakness=1,mc.cores=2,family="poisson")
@@ -110,7 +110,7 @@ N=100;p=1000
 nzc=p/3
 x=matrix(rnorm(N*p),N,p)
 beta=rnorm(nzc)
-fx=x[,seq(nzc)]%*%beta/3
+fx=x[,seq(nzc)]\%*\%beta/3
 hx=exp(fx)
 ty=rexp(N,hx)
 tcens=rbinom(n=N,prob=.3,size=1)
