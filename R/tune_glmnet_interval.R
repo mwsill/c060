@@ -48,23 +48,14 @@ tune.glmnet.interval<-function(parms, x, y,
               alpha=alpha, 
               lambda=opt.lambda)
   
-  #OR extract the coefs from the cv.glmnet object
-  #cof <- coef(cv, s=opt.lambda)
-  #names.cof <- rownames(cof)
-  #cofn <- cof[which(cof!=0)]
-  #names(cofn) <- names.cof[which(cof!=0)]
-  
-  #summary(coef(fit))
-  
-  #ret<-list(q.val=q.val, model=list(fit,cv)) 
-  #ret<-list(q.val=q.val, model=cv) 
-  ret<-list(q.val=q.val, model=fit)
+   
+   ret<-list(q.val=q.val, model=list(alpha=alpha, lambda=opt.lambda, cvreg=cv, fit=fit) ) 
   
   return(ret)
 }
 
 #stolen from MCREstimate package
-# used for stratified(balanced) classification
+# used for stratified(balanced) classification or regression
 my.balanced.folds <- function(class.column.factor, cross.outer)
 {
   # get balanced folds from pamr
