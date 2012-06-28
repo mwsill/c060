@@ -165,8 +165,10 @@ Here, $\alpha \in [0,1]$ determines the influence of the $L_1$ penalty relative 
 
 \subsubsection{The interval-search algorithm to select the optimal elastic net parameter combination}
 
+
 \subsection{Stability selection}
-The stability selection proposed by \citet{MeinshausenBuehlmann2010} is a general approach that combines variable selection methodssuch as $L_1$ penalized Cox models with resampling. By applying the corresponding variable selection method to subsamples that were drawn without replacement, selection probabilities for each feature can be estimated. These selection probabilties are used to define a set of stable features. \citet{MeinshausenBuehlmann2010} provide a theoretical framework for controling Type I error rates of falsely assigning features to the estimated set of stable features. The selection probability of each feature along the regularization path, e.g. the range of possible penalization parameters $\Lambda=\{\lambda_1,\lambda_2...,\lambda_k\}$, is called stability path.
+In contrast to the previously described methods that are typically used to find sparse but also well predicting models, the stability selection proposed by \citet{MeinshausenBuehlmann2010} aims to find stable features which show strong association with the outcome. 
+The stability selection is a general approach that combines variable selection methods such as $L_1$ penalized Cox models with resampling. By applying the corresponding variable selection method to subsamples that were drawn without replacement, selection probabilities for each feature can be estimated. These selection probabilities are used to define a set of stable features. \citet{MeinshausenBuehlmann2010} provide a theoretical framework for controlling Type I error rates of falsely assigning features to the estimated set of stable features. The selection probability of each feature along the regularization path, e.g. the range of possible penalization parameters $\Lambda=\{\lambda_1,\lambda_2...,\lambda_k\}$, is called stability path.
 Given an arbitrary threshold $\pi_{thr} \in (0.5,1)$ and the set of penalization parameters $\Lambda$, the set of stable features estimated with the stability selection is:
 \begin{equation} 
  \hat{S}_{\beta}^{stable}=\left\{i: \max_{\lambda_{j} \in \Lambda} \hat{\Pi}_{i}^{\lambda_{j}} \geq \pi_{thr} \right\},
@@ -176,14 +178,15 @@ Then according to Theorem 1 in \citet{MeinshausenBuehlmann2010}, the expected nu
 \begin{equation}\label{stab}
 E(V) \leq \frac{1}{(2\pi_{thr}-1)} \frac{q^{2}_{\Lambda}}{p},
 \end{equation}
-where $q_{\Lambda}$ the average of the number of non-zero coefficients w.r.t. to the drawn subsamples.  
-Interpreting Equation \ref{stab} the expected number of falsely selected coefficients decreases by either reducing the average number of selected coefficients $q_{\Lambda}$ or by increasing the threshold $\pi_{thr}$. Suppose that $\pi_{thr}$ is fixed, then the stability selection controls $E(V)$ as long as the average number of selected coefficients is less then $e_{\Lambda}$. 
+where $q_{\Lambda}$ is the average of the number of non-zero coefficients w.r.t. to the drawn subsamples.  
+Interpreting Equation \ref{stab} the expected number of falsely selected features decreases by either reducing the average number of selected features $q_{\Lambda}$ or by increasing the threshold $\pi_{thr}$. Suppose that $\pi_{thr}$ is fixed, then the stability selection controls $E(V)$ as long as the average number of selected features is less then $e_{\Lambda}$. 
 This is an upper bound 
 \begin{equation}
 e_{\Lambda} = \sqrt{E(V)p(2\pi_{thr}-1)},
 \end{equation}
-which can be controlled by reducing the length of the regularization path $\Lambda$. In multiple testing the expected number of falsely selected variables is also known as the per-family error rate (PFER) and if divided by the total number of variables $p$ it will become the per-comparison error rate (PCER) \cite{Dudoit2003}. The stability selection allows to control these Type I error rates. For instance, suppose the threshold $\pi_{thr} = 0.8$ is fixed, then
-choosing $\Lambda$ such that $q_{\Lambda} \leq \sqrt{0.6p}$ will control $E(V)=1$. Moreover, by choosing $\Lambda$ so that $q_{\Lambda} \leq \sqrt{0.6p\alpha}$ will control the family wise error rate (FWER) at level $\alpha$, $P(|V|>0) \leq \alpha$.
+which can be controlled by reducing the length of the regularization path $\Lambda$. In multiple testing the expected number of falsely selected variables is also known as the per-family error rate (PFER) and if divided by the total number of features $p$ it will become the per-comparison error rate (PCER) \cite{Dudoit2003}. The stability selection allows to control these Type I error rates. For instance, suppose the threshold $\pi_{thr} = 0.8$ is fixed, then
+choosing $\Lambda$ such that $q_{\Lambda} \leq \sqrt{0.6p}$ will control $E(V)=1$. Moreover, by choosing $\Lambda$ so that $q_{\Lambda} \leq \sqrt{0.6p\alpha}$ will control the family wise error rate (FWER) at level $\alpha$, $P(|V|>0) \leq \alpha$.\\
+According to \citet{FHT2010} the coordinate descent algorithm implemented in the \texttt{glmnet} is most efficient regarding the computational time, when used to calculate a whole regularization path. To utilize this property our algorithm calculates the stability path by first generating subsets and then calculating for each subset the regularization path using the coordinate descent algorithm. The resulting regularization paths are then merged to form the stability path. Furthermore, since the calculations of the regularization paths for each subset are independent of each other, the algorithm can easily be parallelized using the package \texttt{parallel}. %In parallel computing such easily to parallelize  embarrassingly parallel computations.    
 
 \subsection{Prediction error curves for survival models}
 
@@ -413,26 +416,30 @@ as for time-to-event endpoints. The predicted class probability is calculated wi
 \clearpage
 \subsection{Stability selection}
 
+To identify genes which have a relevant influence on the survival times of the patients in the AML data set and to control a Type I error that the genes identified are truly associated with the survival times, the stability selection \cite{MeinshausenBuehlmann2010} can be used. To calculate the stability path for the $L_1$-penalized Cox regression we use the function \texttt{stability.path}. 
+The function draws subsets and calculates in parallel the stability path, e.g. the selection probabilities of each feature along the range of possible penalization parameters. For parallelization we use the package \texttt{parallel}, which is since R 2.14.0 a base package. On Unix like systems the parallelization is done by forking via the function \texttt{mclapply} whereas under Windows systems socket cluster are used. To estimate the stable set of genes given a desired Type I error rate, the function \texttt{stability.selection} or \texttt{plot.stabpath} can be called. Here, we used the function \texttt{plot.stabpath} which will also plot the regularization path for the complete data set along with the stability path, where the stable features are marked in red.
+
 \begin{figure}
-\begin{center}
 <<stabilitySelection, echo=F, results=hide, fig=TRUE>>=
 set.seed(1234)
 y <- cbind(time=pData(eset)$os, status=pData(eset)$os_status)
 cores <- 2
+#calculate stability path
 res <- stability.path(y=y, x=t(exprs(eset)), weakness=1, mc.cores=cores, family="cox")
 par(mar=c(4,4,2,1), mgp=c(2.5,1,0))
-sel <- plot.stabpath(res, fwer=0.2, pi_thr=0.5, xvar="lambda", col.all="gray")
+#plot stability path and perform stability selection controlling a fwer of 0.5
+sel <- plot.stabpath(res, fwer=.2, pi_thr=0.55, xvar="lambda", col.all="gray")
 #sel <- plot.stabpath(res, fwer=0.2, pi_thr=0.5, xvar="norm")
 #sel <- plot.stabpath(res, fwer=0.2, pi_thr=0.5, xvar="dev")
 @
-\end{center}
 \caption{\label{fig:stabpath}Coefficient and stability paths for lasso penalised Cox PH regression model applied to the AML data set.}
 \end{figure}
 
-Stable features (with $\hat\Pi > 0.5$ at $\lambda =$\Sexpr{round(sel$lambda, 3)}) are:
+Controlling a FWER of $0.5$ the estimated set of stable features comprises a single gene (with $\hat\Pi > 0.6$ at $\lambda =$\Sexpr{round(sel$lambda, 3)}) which is:
 <<stabilitySelection2, echo=F, results=verbatim>>=
 print(sel$stable)
 @
+
 
 \clearpage
 \subsection{Elastic net penalised Cox PH regression model}
