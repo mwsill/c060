@@ -6,6 +6,8 @@ export(stability.path,
        fit.glmnet,
        PLL.coxnet,
        plot.peperr.curves,
-       predictProb.glmnet)
+       predictProb.glmnet,
+       EPSGO,
+       tune.glmnet.interval)
 
 

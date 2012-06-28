@@ -3,7 +3,7 @@
 \title{Plot method for prediction error curves of a peperr object}
 \description{Plots, allowing to get a first impression of the prediction error estimates in bootstrap samples.}
 \usage{
-\method{plot.peperr.curves}(x, y, at.risk,...)
+plot.peperr.curves(x, y, at.risk,...)
 }
 \arguments{
 \item{x}{\code{peperr} object.}
