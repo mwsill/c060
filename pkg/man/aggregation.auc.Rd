@@ -19,10 +19,13 @@ aggregation.auc(full.data=NULL, response, x, model, cplx=NULL,  type=c("apparent
 \item{\dots}{additional arguments, passed to \code{predict} function.}
 }
 \details{
-Area under the ROC curve is calculated based on internal \code{glmnet::auc} function from package \code{glmnet}.
+Area under the ROC curve is calculated based on internal \code{glmnet:::auc} function from package \code{glmnet}.
 
 }
 \value{
 Scalar, indicating the area under the ROC curve.
 }
+
+\seealso{\code{\link[peperr]{peperr}}
+
 \keyword{models} \keyword{regression} \keyword{classification}
