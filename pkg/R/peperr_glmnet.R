@@ -51,8 +51,7 @@ complexity.glmnet <- function (response, x, full.data, ...)
     lambda
 }
 
-
-predictProb.coxnet <- function (object, x, times, complexity,  ...) 
+predictProb.coxnet <- predictProb.glmnet <- function (object, x, times, complexity,  ...) 
 {
     require(glmnet)    
     lp       <- as.numeric(predict(object, newx=data.matrix(x),s=complexity, type="link"))
