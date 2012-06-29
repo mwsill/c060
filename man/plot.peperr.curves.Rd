@@ -21,7 +21,9 @@ The display of prediction error curves is adapted to allow for numbers at risk.
 
 # example from glmnet package
 set.seed(10101)
-require(glmnet)
+library(glmnet)
+library(survival)
+library(peperr)
 
 N=1000;p=30
 nzc=p/3
