@@ -4,14 +4,14 @@
 function to plot a stability path 
 }
 \description{
-Given a desired family-wise error rate (FWER) and a stability path calculated with \texttt{stability.path} the function selects an stable set of features and plots the stability path and the corresponding regularization path.
+Given a desired family-wise error rate (FWER) and a stability path calculated with \code{stability.path} the function selects an stable set of features and plots the stability path and the corresponding regularization path.
 }
 \usage{
 plot.stabpath(stabpath, fwer=0.5,pi_thr=0.6, xvar=c("lambda", "norm", "dev"), col.all="black", col.sel="red",...)
 }
 \arguments{
   \item{stabpath}{
- an object of class "stabpath" as returned by the function \texttt{stability.path}.
+ an object of class "stabpath" as returned by the function \code{stability.path}.
 }
   \item{fwer}{
  the desired family-wise error rate (fwer), e.g. the probability that at least one feature in the estimated set of stable features has been falsely selected. 

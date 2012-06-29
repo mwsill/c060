@@ -4,7 +4,7 @@
 function to estimate a stable set of variables  
 }
 \description{
-Given a desired family-wise error rate (FWER) and a stability path calculated with \texttt{stability.path} the function selects a stable set of features.
+Given a desired family-wise error rate (FWER) and a stability path calculated with \code{stability.path} the function selects a stable set of features.
 }
 \usage{
 stability.selection(stabpath,fwer,pi_thr=0.6)
@@ -12,7 +12,7 @@ stability.selection(stabpath,fwer,pi_thr=0.6)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{stabpath}{
- an object of class "stabpath" as returned by the function \texttt{stability.path}.
+ an object of class "stabpath" as returned by the function \code{stability.path}.
 }
   \item{fwer}{
  the desired family-wise error rate (fwer), e.g. the probability that at least one feature in the estimated set of stable features has been falsely selected. 

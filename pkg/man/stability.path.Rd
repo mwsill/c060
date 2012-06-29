@@ -43,10 +43,10 @@ For each subsample the features are reweighted by a random weight uniformly samp
 This additional randomisation leads to a more consistent estimation of the stable set of features.
 }
   \item{mc.cores}{
-number of cores used for the parallelization. For unix like system the parallelization is done by forking using the function \texttt{mclapply}. For windows systems socket cluster are used. 
+number of cores used for the parallelization. For unix like system the parallelization is done by forking using the function \code{mclapply}. For windows systems socket cluster are used. 
 }
   \item{...}{
-further arguments that are passed to the \texttt{glmnet} function. 
+further arguments that are passed to the \code{glmnet} function. 
 }
 }
 \description{
