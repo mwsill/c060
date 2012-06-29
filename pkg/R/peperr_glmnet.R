@@ -182,10 +182,10 @@ plot.peperr.curves <- function(x,at.risk=TRUE,...) {
   }
   
   lines(x$attribute, x$null.model, type = "l", col = "blue", lwd = 2, lty = 1)
-  lines(x$attribute, perr(x, "632p"), type = "l", col= "black", lty = 1, lwd = 2)
-  lines(x$attribute, x$full.apparent, type = "l", col = "red", lty = 1, lwd = 2)
+  lines(x$attribute, perr(x, "632p"), type = "l", col= "black", lty = 2, lwd = 2)
+  lines(x$attribute, x$full.apparent, type = "l", col = "red", lty = 3, lwd = 2)
   legend(x = "topleft", col = c("blue", "black", "red", "light grey"), lwd=c(2,2,2,1), 
-         lty = c(1, 1, 1, 1), legend = c("Null model", ".632+ estimate", "Full apparent", "Bootstrap samples"))
+         lty = c(1:3, 1), legend = c("Null model", ".632+ estimate", "Full apparent", "Bootstrap samples"))
   
   if (at.risk) {
      tmpxaxp   <- par("xaxp")
