@@ -1,11 +1,11 @@
-\name{predictProb.glmnet}
-\alias{predictProb.glmnet}
+\name{predictProb.coxnet}
+\alias{predictProb.coxnet}
 \title{Extract predicted survival probabilities from a glmnet fit}
 \description{
 Extracts predicted survival probabilities from survival model fitted by glmnet, providing an interface as required by \code{pmpec}. 
 }
 \usage{
-predictProb.glmnet(object, x, times, complexity, ...)
+predictProb.coxnet(object, x, times, complexity, ...)
 }
 \arguments{
 \item{object}{a fitted model of class \code{glmnet}.}
