@@ -107,7 +107,7 @@ plot.stabpath <- function(stabpath,fwer=0.5,pi_thr=0.6, xvar=c("lambda", "norm",
   if(!class(stabpath$fit)[1]=="multnet"){
   par(mfrow=c(2,1))
   matplot(y=t(beta), x=index
-          ,type="l",col=cols,lwd=lwds,lty=1,ylab=expression(paste(beta[i]))
+          ,type="l",col=cols,lwd=lwds,lty=1,ylab=expression(paste(hat(beta)[i]))
           ,xlab=iname,main="Penalization Path",cex.lab=1,cex.axis=1,...)
   }
   matplot(y=as.matrix(t(stabpath$stabpath)), x=index
