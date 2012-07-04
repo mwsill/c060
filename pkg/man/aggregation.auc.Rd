@@ -26,6 +26,11 @@ Area under the ROC curve is calculated based on internal \code{glmnet:::auc} fun
 Scalar, indicating the area under the ROC curve.
 }
 
+\author{
+Thomas Hielscher \
+\email{t.hielscher@dkfz.de}
+}
+
 \seealso{\code{\link[peperr]{peperr}}
 
 \keyword{models} \keyword{regression} \keyword{classification}

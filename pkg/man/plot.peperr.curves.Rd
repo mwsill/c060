@@ -48,4 +48,9 @@ plot(peperr.object)
 }
 \keyword{models} \keyword{regression} \keyword{survival}
 
+\author{
+Thomas Hielscher \
+\email{t.hielscher@dkfz.de}
+}
+
 \seealso{\code{\link[peperr]{peperr}}}

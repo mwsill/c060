@@ -10,7 +10,7 @@ fit.glmnet(response, x, cplx, ...)
 \arguments{
   \item{response}{a survival object (with \code{Surv(time, status)}, or a binary vector with entries 0 and 1).}
   \item{x}{\code{n*p} matrix of covariates.}
-  \item{cplx}{$\lambda$ penalty value.}
+  \item{cplx}{lambda penalty value.}
   \item{\dots}{additional arguments passed to \code{glmnet} call such as \code{family}.}
 }
 \value{
@@ -37,6 +37,11 @@ evaluation with package \code{peperr}.
    Porzelius, C., Binder, H., and Schumacher, M. (2009) 
    \emph{Parallelized prediction error estimation for evaluation of high-dimensional models,
    Bioinformatics, Vol. 25(6), 827-829.}
+}
+
+\author{
+Thomas Hielscher \
+\email{t.hielscher@dkfz.de}
 }
   
 \seealso{ \code{\link[peperr]{peperr}}, \code{\link[glmnet]{glmnet}}}

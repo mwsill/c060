@@ -12,7 +12,7 @@ PLL.coxnet(object, newdata, newtime, newstatus, complexity, ...)
   \item{newdata}{\code{n_new*p} matrix of covariates.}
   \item{newtime}{\code{n_new}-vector of censored survival times.}
   \item{newstatus}{\code{n_new}-vector of survival status, coded with 0 and .1}
-  \item{complexity}{$\lambda$ penalty value.}
+  \item{complexity}{lambda penalty value.}
   \item{\dots}{additional arguments, not used.}
 }
 \details{
@@ -23,3 +23,8 @@ This is basically a wrapper based on the \code{coxnet.deviance} function from pa
 Vector of length \code{n_new}
 }
 \keyword{models} \keyword{penalized regression} \keyword{survival}
+
+\author{
+Thomas Hielscher \
+\email{t.hielscher@dkfz.de}
+}

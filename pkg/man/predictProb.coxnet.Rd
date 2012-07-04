@@ -11,7 +11,7 @@ predictProb.coxnet(object, x, times, complexity, ...)
 \item{object}{a fitted model of class \code{glmnet}.}
 \item{x}{\code{n*p} matrix of covariates.}
 \item{times}{vector of evaluation time points.}
-\item{complexity}{$\lambda$ penalty value.}
+\item{complexity}{lambda penalty value.}
 \item{\dots}{additional arguments, currently not used.}
 }
 
@@ -34,6 +34,12 @@ Matrix with probabilities for each evaluation time point in \code{times} (column
    \emph{Parallelized prediction error estimation for evaluation of high-dimensional models,
    Bioinformatics, Vol. 25(6), 827-829.}
 }
+
+\author{
+Thomas Hielscher \
+\email{t.hielscher@dkfz.de}
+}
+
 
 \seealso{\code{\link[peperr]{peperr}}, \code{\link[glmnet]{glmnet}}}
 \keyword{models} \keyword{penalized regression} \keyword{survival}
