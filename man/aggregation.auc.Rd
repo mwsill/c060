@@ -31,6 +31,6 @@ Thomas Hielscher \
 \email{t.hielscher@dkfz.de}
 }
 
-\seealso{\code{\link[peperr]{peperr}}
+\seealso{\code{\link[peperr]{peperr}}}
 
 \keyword{models} \keyword{regression} \keyword{classification}
