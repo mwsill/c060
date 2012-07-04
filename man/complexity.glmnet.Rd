@@ -1,6 +1,6 @@
 \name{complexity.glmnet}
 \alias{complexity.glmnet}
-\title{Interface for determination of penalty $\lambda$ in penalized regression model via cross-validation}
+\title{Interface for determination of penalty lambda in penalized regression model via cross-validation}
 \description{
 Determines the amount of shrinkage for a penalized regression model fitted by glmnet via cross-validation, conforming to the calling convention required by argument \code{complexity} in \code{peperr} call. 
 }
@@ -14,10 +14,10 @@ complexity.glmnet(response, x, full.data, ...)
   \item{\dots}{additional arguments passed to \code{cv.glmnet} call such as \code{family}.}
   }
 \value{
-Scalar value giving the optimal $\lambda$.
+Scalar value giving the optimal lambda.
 }
 \details{
-Function is basically a wrapper for \code{cv.glmnet} of package \code{glmnet}. A n-fold cross-validation (default n=10) is performed to determine the optimal penalty $\lambda$.
+Function is basically a wrapper for \code{cv.glmnet} of package \code{glmnet}. A n-fold cross-validation (default n=10) is performed to determine the optimal penalty lambda.
 For Cox PH regression models the deviance based on penalized partial log-likelihood is used as loss function. For binary endpoints other loss functions are available as well (see \code{type.measure}). Deviance is default. Calling \code{peperr}, the default arguments of \code{cv.glmnet} can be changed by passing a named list containing these as argument \code{args.complexity}.
 Note that only penalized Cox PH (\code{family="cox"}) and logistic regression models (\code{family="binomial"}) are sensible for prediction error
 evaluation with package \code{peperr}.
@@ -37,6 +37,11 @@ evaluation with package \code{peperr}.
    Porzelius, C., Binder, H., and Schumacher, M. (2009) 
    \emph{Parallelized prediction error estimation for evaluation of high-dimensional models,
    Bioinformatics, Vol. 25(6), 827-829.}
+}
+
+\author{
+Thomas Hielscher \
+\email{t.hielscher@dkfz.de}
 }
 
 \seealso{\code{\link[peperr]{peperr}}, \code{\link[glmnet]{cv.glmnet}}}
