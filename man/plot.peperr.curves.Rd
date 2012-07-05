@@ -1,13 +1,12 @@
 \name{plot.peperr.curves}
 \alias{plot.peperr.curves}
 \title{Plot method for prediction error curves of a peperr object}
-\description{Plots, allowing to get a first impression of the prediction error estimates in bootstrap samples.}
+\description{Plots individual and aggregated prediction error estimates based on bootstrap samples.}
 \usage{
-plot.peperr.curves(x, y, at.risk,...)
+plot.peperr.curves(x, at.risk=TRUE,...)
 }
 \arguments{
 \item{x}{\code{peperr} object.}
-\item{y}{not used.}
 \item{at.risk}{number at risk to be display. default is TRUE.}
 \item{\dots}{additional arguments, not used.}
 
