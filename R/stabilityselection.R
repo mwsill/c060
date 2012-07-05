@@ -1,6 +1,6 @@
 #Change log:
 # 13-06-2012 (MZ):
-# - changes to plot.stabpath() in a fashion similar to glmnet:::plotCoef; allow users to choose colours
+# - changes to plot.x() in a fashion similar to glmnet:::plotCoef; allow users to choose colours
 require(glmnet)
 require(parallel)
 
@@ -24,17 +24,17 @@ stability.path <- function(y,x,size=0.632,steps=100,weakness=1,mc.cores=getOptio
 	}
   
   #merging
-	stabpath <- as.matrix(res[[1]])
+	x <- as.matrix(res[[1]])
 	qmat <- matrix(ncol=ncol(res[[1]]),nrow=steps)
 	qmat[1,] <- colSums(as.matrix(res[[1]]))
 	for(i in 2:length(res)){
   		qmat[i,] <- colSums(as.matrix(res[[i]]))
-		stabpath <- stabpath + as.matrix(res[[i]])
+		x <- x + as.matrix(res[[i]])
 	}
-	stabpath <- stabpath/length(res)
+	x <- x/length(res)
 	qs <- colMeans(qmat)
-	out <- list(fit=fit,stabpath=stabpath,qs=qs)	
-	class(out) <- "stabpath" 
+	out <- list(fit=fit,x=x,qs=qs)	
+	class(out) <- "x" 
 	return(out)
 }
 
@@ -56,29 +56,29 @@ glmnet.subset <- function(index,subsets,x,y,lambda,weakness,p,...){
 }
 
 #performs error control and returns estimated set of stable variables and corresponding lambda
-stability.selection <- function(stabpath,fwer,pi_thr=0.6){
+stability.selection <- function(x,fwer,pi_thr=0.6){
   stopifnot(pi_thr>0.5,pi_thr<1)
-  if(class(stabpath$fit)[1]=="multnet"){
-  p <- dim(stabpath$fit$beta[[1]])[1]
+  if(class(x$fit)[1]=="multnet"){
+  p <- dim(x$fit$beta[[1]])[1]
   }else{
-	p <- dim(stabpath$fit$beta)[1]
+	p <- dim(x$fit$beta)[1]
   }
 	qv <- ceiling(sqrt(fwer*(2*pi_thr-1)*p)) 
-	lpos <- which(stabpath$qs>qv)[1]
-	if(!is.na(lpos)){stable <- which(stabpath$stabpath[,lpos]>=pi_thr)}else{
+	lpos <- which(x$qs>qv)[1]
+	if(!is.na(lpos)){stable <- which(x$x[,lpos]>=pi_thr)}else{
     stable <- NA
 	}
-	out <- list(stable=stable,lambda=stabpath$fit$lambda[lpos],lpos=lpos,fwer=fwer)
+	out <- list(stable=stable,lambda=x$fit$lambda[lpos],lpos=lpos,fwer=fwer)
 	return(out)
 }
 
 #plot penalization and stability path 
-plot.stabpath <- function(stabpath,fwer=0.5,pi_thr=0.6, xvar=c("lambda", "norm", "dev"), col.all="black", col.sel="red",...){
-  sel <- stability.selection(stabpath,fwer,pi_thr)
-  if(class(stabpath$fit)[1]=="multnet"){
-    beta = as.matrix(Reduce("+",stabpath$fit$beta))
+plotstabpath <- function(x,fwer=0.5,pi_thr=0.6, xvar=c("lambda", "norm", "dev"), col.all="black", col.sel="red",...){
+  sel <- stability.selection(x,fwer,pi_thr)
+  if(class(x$fit)[1]=="multnet"){
+    beta = as.matrix(Reduce("+",x$fit$beta))
   }else{
-    beta = as.matrix(stabpath$fit$beta)
+    beta = as.matrix(x$fit$beta)
   }  
     p <- dim(beta)[1]
     which = nonzeroCoef(beta)
@@ -92,10 +92,10 @@ plot.stabpath <- function(stabpath,fwer=0.5,pi_thr=0.6, xvar=c("lambda", "norm",
       index = apply(abs(beta), 2, sum)
       iname = "L1 Norm"
     }, lambda = {
-      index = log(stabpath$fit$lambda)
+      index = log(x$fit$lambda)
       iname = expression(paste("log ",lambda))
     }, dev = {
-      index = stabpath$fit$dev
+      index = x$fit$dev
       iname = "Fraction Deviance Explained"
     })
   #}
@@ -104,13 +104,13 @@ plot.stabpath <- function(stabpath,fwer=0.5,pi_thr=0.6, xvar=c("lambda", "norm",
   cols[sel$stable] <- col.sel
   lwds <- rep(1,p)
   lwds[sel$stable] <- 2
-  if(!class(stabpath$fit)[1]=="multnet"){
+  if(!class(x$fit)[1]=="multnet"){
   par(mfrow=c(2,1))
   matplot(y=t(beta), x=index
           ,type="l",col=cols,lwd=lwds,lty=1,ylab=expression(paste(hat(beta)[i]))
           ,xlab=iname,main="Penalization Path",cex.lab=1,cex.axis=1,...)
   }
-  matplot(y=as.matrix(t(stabpath$stabpath)), x=index
+  matplot(y=as.matrix(t(x$x)), x=index
           ,type="l",col=cols,lwd=lwds,lty=1,ylab=expression(paste(hat(Pi)))
           ,xlab=iname,main="Stability Path",ylim=c(0,1),cex.lab=1,cex.axis=1,...)
   abline(h=pi_thr,col="darkred",lwd=1,lty=1)

@@ -12,24 +12,24 @@ stability.path(y,x,size=0.632,steps=100,weakness=1,mc.cores=getOption("mc.cores"
 %- maybe also 'usage' for other objects documented here.
 \arguments{
 \item{y}{
-response variable. Like for the glment function: Quantitative for ‘family="gaussian"’ or
-          ‘family="poisson"’ (non-negative counts). For
-          ‘family="binomial"’ should be either a factor with two
+response variable. Like for the glment function: Quantitative for ???family="gaussian"??? or
+          ???family="poisson"??? (non-negative counts). For
+          ???family="binomial"??? should be either a factor with two
           levels, or a two-column matrix of counts or proportions. For
-          ‘family="multinomial"’, can be a ‘nc>=2’ level factor, or a
-          matrix with ‘nc’ columns of counts or proportions. For
-          ‘family="cox"’, ‘y’ should be a two-column matrix with
+          ???family="multinomial"???, can be a ???nc>=2??? level factor, or a
+          matrix with ???nc??? columns of counts or proportions. For
+          ???family="cox"???, ???y??? should be a two-column matrix with
           columns named 'time' and 'status'. The latter is a binary
           variable, with '1' indicating death, and '0' indicating right
-          censored. The function ‘Surv()’ in package ‘survival’
+          censored. The function ???Surv()??? in package ???survival???
           produces such a matrix
 }
   \item{x}{
 input matrix. Like for the glmnet function:
 of dimension nobs x nvars; each row is an
 observation vector. Can be in sparse matrix format (inherit
-from class ‘"sparseMatrix"’ as in package ‘Matrix’; not yet
-available for ‘family="cox"’)
+from class ???"sparseMatrix"??? as in package ???Matrix???; not yet
+available for ???family="cox"???)
 }
   \item{size}{
 proportion of samples drawn in every subsample used for the stability selection.
@@ -65,13 +65,13 @@ an object of class "stabpath", which is a list of three objects
   }
 }
 \author{
-Martin Sill \
+Martin Sill 
 \email{m.sill@dkfz.de}
 }
 \references{
-Meinshausen N. and B\"uhlmann P. (2010), Stability Selection, Journal of the Royal Statistical Society: Series B (Statistical Methodology) Volume 72, Issue 4, pages 417–473.
+Meinshausen N. and B\"uhlmann P. (2010), Stability Selection, Journal of the Royal Statistical Society: Series B (Statistical Methodology) Volume 72, Issue 4, pages 417???473.
 }
-\seealso{ \code{\link{glmnet},\link{stability.selection},\link{plot.stabpath}}
+\seealso{ \code{\link{glmnet},\link{stability.selection},\link{plotstabpath}}
 }
 \examples{
 #gaussian
@@ -80,17 +80,17 @@ x <- matrix(rnorm(100*1000,0,1),100,1000)
 y <- x[1:100,1:1000]\%*\% c(rep(2,5),rep(-2,5),rep(.1,990))
 +matrix(rnorm(100*10,0,.1),10,10) 
 res <- stability.path(y,x,weakness=1,mc.cores=2)
-plot(res)
+plotstabpath(res)
 
 #binomial
 y=sample(1:2,100,replace=TRUE)
 res <- stability.path(y,x,weakness=1,mc.cores=2,family="binomial")
-plot(res)
+plotstabpath(res)
     
 #multinomial
 y=sample(1:4,100,replace=TRUE)
 res <- stability.path(y,x,weakness=1,mc.cores=2,family="multinomial")
-plot(res)
+plotstabpath(res)
     
 #poisson
 N=100; p=1000
@@ -101,7 +101,7 @@ f = x[,seq(nzc)]\%*\%beta
 mu=exp(f)
 y=rpois(N,mu)
 res <- stability.path(y,x,weakness=1,mc.cores=2,family="poisson")
-plot(res)
+plotstabpath(res)
 
 #Cox
 library(survival)
@@ -116,6 +116,6 @@ ty=rexp(N,hx)
 tcens=rbinom(n=N,prob=.3,size=1)
 y=cbind(time=ty,status=1-tcens)
 res <- stability.path(y,x,weakness=1,mc.cores=2,family="cox")
-plot(res)
+plotstabpath(res)
 }
 \keyword{stability selection}

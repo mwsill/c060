@@ -1,5 +1,5 @@
 export(stability.path,
-       plot.stabpath,
+       plotstabpath,
        stability.selection,
        aggregation.auc,
        complexity.glmnet,
