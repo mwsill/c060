@@ -2,10 +2,10 @@
 
 \alias{tune.glmnet.interval}
 
-\title{  Wrapper function for \code{glmnet] objects.    }
+\title{  Wrapper function for \code{glmnet} objects.    }
 \description{
    Wrapper function for \code{glmnet} objects used by \code{EPSGO} function.
-   This function is  mainly used within the function \code{\link{EPSGO}}}  
+   This function is  mainly used within the function \code{\link{EPSGO}}  
 }
 
 
@@ -60,15 +60,15 @@ tune.glmnet.interval(parms, x, y,
   }
 
  ret<-list(q.val=q.val, model=list(alpha=alpha, lambda=opt.lambda, cvreg=cv, fit=fit) ) 
- 
+} 
 \author{Natalia Becker  natalia.becker at dkfz.de }
 
 \seealso{\code{\link{EPSGO}}}
 
-\keyword{ models }
-\keyword{ multivariate }
-\keyword{ iteration }
-\keyword{ optimize }
+\keyword{models}
+\keyword{multivariate}
+\keyword{iteration}
+\keyword{optimize}
 
 
 
