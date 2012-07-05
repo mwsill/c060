@@ -13,9 +13,6 @@ tune.glmnet.interval<-function(parms, x, y,
   
   # 1. decode the parameters ############################################################
   
-  print("parms.coding")
-  print(parms.coding)
-  
   alpha<-parms[1]
   names(alpha)<- NULL
   
@@ -59,7 +56,7 @@ tune.glmnet.interval<-function(parms, x, y,
 my.balanced.folds <- function(class.column.factor, cross.outer)
 {
   # get balanced folds from pamr
-  sampleOfFolds  <- get("balanced.folds",en=asNamespace("pamr"))(class.column.factor, nfolds=cross.outer)
+  sampleOfFolds  <- get("balanced.folds",envir=asNamespace("pamr"))(class.column.factor, nfolds=cross.outer)
   permutated.cut <- rep(0,length(class.column.factor))
   for (sample in 1:cross.outer)
   {

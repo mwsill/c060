@@ -24,7 +24,8 @@ tune.glmnet.interval(parms, x, y,
                      verbose=FALSE,
                      \dots)
 }
-
+tune.glmnet.interval: no visible binding for global variable
+  'parms.coding'
 
 
 \arguments{
@@ -42,7 +43,7 @@ tune.glmnet.interval(parms, x, y,
   \item{grouped}{ This is an experimental argument, with default TRUE, and can be ignored by most users. For all models except the "cox", this refers to computing nfolds separate statistics, and then using their mean and estimated standard error to describe the CV curve. If grouped=FALSE, an error matrix is built up at the observation level from the predictions from the nfold fits, and then summarized (does not apply to type.measure="auc"). For the "cox" family, grouped=TRUE obtains the CV partial likelihood for the Kth fold by subtraction; by subtracting the log partial likelihood evaluated on the full dataset from that evaluated on the on the (K-1)/K dataset. This makes more efficient use of risk sets. With grouped=FALSE the log partial likelihood is computed only on the Kth fold}
   \item{type.min}{parameter for chosing optimal model: 'lambda.min'- value of lambda that gives minimum mean cross-validated error (cvm).
  'lambda.1se' - largest value of lambda such that error is within one standard error of the minimum.}
-   item{verbose}{verbose}   
+   \item{verbose}{verbose}   
   \item{\dots}{Further parameters}
 }
 
