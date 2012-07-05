@@ -169,6 +169,8 @@ aggregation.auc <- function (full.data = NULL, response, x, model, cplx = NULL,
 ########################
 
 plot.peperr.curves <- function(x,at.risk=TRUE,...) {
+  
+  require(peperr)
 
   plot(x$attribute, x$null.model, type = "n", las=1,
        col = "blue", xlab = "Evaluation time points", 
