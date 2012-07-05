@@ -66,7 +66,7 @@ predictProb.coxnet <- predictProb.glmnet <- function (object, x, times, complexi
 PLL.coxnet <- function(object, newdata, newtime, newstatus, complexity, ...) 
 {
    require(glmnet)
-   PLL <- glmnet:::coxnet.deviance(pred = NULL, Surv(newtime,newstatus), x = newdata, offset = NULL, weights = NULL, beta = coef(object,s=complexity)) 
+   PLL <- glmnet:::coxnet.deviance(pred = NULL, Surv(newtime,newstatus), x = data.matrix(newdata), offset = NULL, weights = NULL, beta = coef(object,s=complexity)) 
    PLL / -2
 }
 
