@@ -389,7 +389,7 @@ EPSGO<- function(
 		Xsam <- lhs(N, bounds)
 		EIall=rep(0,N)	
 		for (i in 1:N ){		
-			EIall[i] = - ExpImprovement(Xsam[i, , drop=FALSE], fmin, fit.gp, muX, muY)
+			EIall[i] = - ExpImprovement(Xsam[i, , drop=FALSE], fmin, fit.gp, muX=NULL, muY=NULL)
 		}
 		
 		EIstd =  sd( c(EIall, EImax) )
