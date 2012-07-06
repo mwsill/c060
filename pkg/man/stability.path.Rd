@@ -49,9 +49,6 @@ number of cores used for the parallelization. For unix like system the paralleli
 further arguments that are passed to the \code{glmnet} function. 
 }
 }
-\description{
-calculates the stability path by first generating subsets and then uses the glmnet function to calculate the regularization path for each subset. The resulting regularization paths are then merged to form the stability path.
-}
 \value{
 an object of class "stabpath", which is a list of three objects
   \item{fit}{

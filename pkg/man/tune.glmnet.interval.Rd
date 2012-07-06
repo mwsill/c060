@@ -24,8 +24,8 @@ tune.glmnet.interval(parms, x, y,
                      verbose=FALSE,
                      \dots)
 }
-tune.glmnet.interval: no visible binding for global variable
-  'parms.coding'
+%tune.glmnet.interval: no visible binding for global variable
+%  'parms.coding'
 
 
 \arguments{
