@@ -7,7 +7,7 @@
 my.balanced.folds(class.column.factor, cross.outer)
 
 }
-\author{}
+%\author{}
 \details{These are not intended for use by users. \code{my.balanced.folds}
  produces balanced stratified folds, which are used for tuning penalization parameters.
 }
