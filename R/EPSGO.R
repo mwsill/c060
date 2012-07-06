@@ -26,7 +26,7 @@ EPSGO<- function(
                  my.mfrow=c(1,1),  
                 # verbose?
                 verbose=TRUE,
-                seed=02122008, 
+                seed=123, 
                 ... ){
  
 

@@ -1,7 +1,8 @@
 \name{EPSGO}
 
 \alias{EPSGO}
-
+\alias{Direct}
+\alias{ExpImprovement}
 
 \title{  Finds an optimal solution  }
 \description{
@@ -17,7 +18,7 @@ EPSGO(Q.func, bounds,	parms.coding="none", fminlower=0, flag.find.one.min =FALSE
 
 \arguments{
   \item{Q.func}{ name of the function to be  minimized. }
-  \item{bounds}{ bounds for parameters, see examples}
+  \item{bounds}{ bounds for parameters}
   \item{parms.coding}{ parmeters coding: none  or log2, default: none.  }
   \item{fminlower}{ minimal value for the function Q.func, default is 0.     }
   \item{flag.find.one.min}{  do you want to find one min value and stop? Default: FALSE }
