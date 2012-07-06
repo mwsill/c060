@@ -368,8 +368,6 @@ EPSGO<- function(
 								# additional args for the problem function 
 								fmin=fmin,
 								fit.gp=fit.gp
-								#,	muX=muX, 
-								#muY=muY
 								 )
 		
 		# E[I(p)], xmax - p with max EI
