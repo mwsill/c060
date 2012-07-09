@@ -10,7 +10,7 @@
 }
 
 \usage{
-EPSGO(Q.func, bounds,	parms.coding="none", fminlower=0, flag.find.one.min =FALSE,
+EPSGO(Q.func, bounds,  round.n, parms.coding="none", fminlower=0, flag.find.one.min =FALSE,
 			show=c("none", "final", "all"), N= NULL, maxevals = 500,  
 	    pdf.name=NULL,  pdf.width=12,  pdf.height=12,   my.mfrow=c(1,1), 
 	    verbose=TRUE, seed=123,  ...  )
@@ -19,6 +19,7 @@ EPSGO(Q.func, bounds,	parms.coding="none", fminlower=0, flag.find.one.min =FALSE
 \arguments{
   \item{Q.func}{ name of the function to be  minimized. }
   \item{bounds}{ bounds for parameters}
+  \item{round.n}{ number of digits after comma, default: 5}           
   \item{parms.coding}{ parmeters coding: none  or log2, default: none.  }
   \item{fminlower}{ minimal value for the function Q.func, default is 0.     }
   \item{flag.find.one.min}{  do you want to find one min value and stop? Default: FALSE }
@@ -94,8 +95,6 @@ machines in classification and regression via model-based global optimization"
 \keyword{ graphs }
 \keyword{ iteration }
 \keyword{ optimize }
-
-
 
 
 
