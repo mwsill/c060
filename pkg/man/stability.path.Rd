@@ -12,24 +12,24 @@ stability.path(y,x,size=0.632,steps=100,weakness=1,mc.cores=getOption("mc.cores"
 %- maybe also 'usage' for other objects documented here.
 \arguments{
 \item{y}{
-response variable. Like for the glment function: Quantitative for ???family="gaussian"??? or
-          ???family="poisson"??? (non-negative counts). For
-          ???family="binomial"??? should be either a factor with two
+response variable. Like for the glment function: Quantitative for \code{family="gaussian"} or
+          \code{family="poisson"} (non-negative counts). For
+          \code{family="binomial"} should be either a factor with two
           levels, or a two-column matrix of counts or proportions. For
-          ???family="multinomial"???, can be a ???nc>=2??? level factor, or a
-          matrix with ???nc??? columns of counts or proportions. For
-          ???family="cox"???, ???y??? should be a two-column matrix with
+          \code{family="multinomial"}, can be a \code{nc>=2} level factor, or a
+          matrix with \code{nc} columns of counts or proportions. For
+          \code{family="cox"}, \code{y} should be a two-column matrix with
           columns named 'time' and 'status'. The latter is a binary
           variable, with '1' indicating death, and '0' indicating right
-          censored. The function ???Surv()??? in package ???survival???
+          censored. The function \code{Surv()} in package \code{survival}
           produces such a matrix
 }
   \item{x}{
 input matrix. Like for the glmnet function:
 of dimension nobs x nvars; each row is an
 observation vector. Can be in sparse matrix format (inherit
-from class ???"sparseMatrix"??? as in package ???Matrix???; not yet
-available for ???family="cox"???)
+from class \code{"sparseMatrix"} as in package \code{Matrix}; not yet
+available for \code{family="cox"})
 }
   \item{size}{
 proportion of samples drawn in every subsample used for the stability selection.
@@ -55,7 +55,7 @@ an object of class "stabpath", which is a list of three objects
   the fit object of class "glmnet" as returned from the glmnet function when applied to the complete data set.
   }
   \item{stabpath}{
-  an object of class "dgCMatrix" which represents the stability path.
+  a matrix which represents the stability path.
   }
   \item{qs}{
   a vector holding the values of the average number of non-zero coefficients w.r.t to the lambdas in the regularization path.
