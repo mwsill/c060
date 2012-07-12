@@ -6,7 +6,8 @@ require(parallel)
 
 stability.path <- function(y,x,size=0.632,steps=100,weakness=1,mc.cores=getOption("mc.cores", 2L),...){
 	fit <- glmnet(x,y,...)
-	if(class(fit)[1]=="multnet") y <- as.character(y)
+	if(class(fit)[1]=="multnet"|class(fit)[1]=="lognet") y <- as.factor(y)
+  #if(class(fit)[1]=="lognet") y <- as.logical(y) 
 	p <- ncol(x)
 	#draw subsets
   subsets <- sapply(1:steps,function(v){sample(1:nrow(x),nrow(x)*size)})
@@ -45,7 +46,7 @@ glmnet.subset <- function(index,subsets,x,y,lambda,weakness,p,...){
     glmnet(x[subsets[,index],],y[subsets[,index],],lambda=lambda
            ,penalty.factor= 1/runif(p,weakness,1),...)$beta!=0
   }else{
-    if(is.character(y)){
+    if(is.factor(y)&levels(y)>2){
       Reduce("+",glmnet(x[subsets[,index],],y[subsets[,index]],lambda=lambda
                         ,penalty.factor= 1/runif(p,weakness,1),...)$beta)!=0
     }	
