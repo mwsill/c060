@@ -46,9 +46,12 @@ glmnet.subset <- function(index,subsets,x,y,lambda,weakness,p,...){
     glmnet(x[subsets[,index],],y[subsets[,index],],lambda=lambda
            ,penalty.factor= 1/runif(p,weakness,1),...)$beta!=0
   }else{
-    if(is.factor(y)&levels(y)>2){
-      Reduce("+",glmnet(x[subsets[,index],],y[subsets[,index]],lambda=lambda
-                        ,penalty.factor= 1/runif(p,weakness,1),...)$beta)!=0
+    if(is.factor(y)&length(levels(y))>2){
+    temp <- glmnet(x[subsets[,index],],y[subsets[,index]],lambda=lambda
+                       ,penalty.factor= 1/runif(p,weakness,1),...)[[2]]
+    temp <- lapply(temp,as.matrix)
+      Reduce("+",lapply(temp,function(x) x!=0))
+    
     }	
     else{
       glmnet(x[subsets[,index],],y[subsets[,index]],lambda=lambda

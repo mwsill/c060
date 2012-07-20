@@ -70,7 +70,7 @@ Meinshausen N. and B\"uhlmann P. (2010), Stability Selection, Journal of the Roy
 }
 \seealso{ \code{\link{glmnet},\link{stability.selection},\link{plotstabpath}}
 }
-\examples{
+\examples{\dontrun{
 #gaussian
 set.seed(1234)
 x <- matrix(rnorm(100*1000,0,1),100,1000)
@@ -113,5 +113,6 @@ tcens=rbinom(n=N,prob=.3,size=1)
 y=cbind(time=ty,status=1-tcens)
 res <- stability.path(y,x,weakness=1,mc.cores=2,family="cox")
 plotstabpath(res)
+}
 }
 \keyword{stability selection}
