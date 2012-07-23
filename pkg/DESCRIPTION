@@ -4,9 +4,9 @@ Date: 2012-06-09
 Author: Martin Sill, Thomas Hielscher, Manuela Zucknick, Natalia Becker.
 Maintainer: Martin Sill <m.sill@dkfz.de>
 Title: Additional variable selection, model validation and parameter tuning functions for glmnet models
-Depends: glmnet, parallel, mlegp, tgp, peperr, penalizedSVM
-Imports: glmnet, parallel, mlegp, tgp, peperr, penalizedSVM
+Depends: glmnet, survival, parallel, mlegp, tgp, peperr, penalizedSVM
+Imports: glmnet, survival, parallel, mlegp, tgp, peperr, penalizedSVM
 Suggests: survival
-Description: c060 provides additonal functions to perform stability selection, model validation and parameter tuning for glmnet models
+Description: c060 provides additional functions to perform stability selection, model validation and parameter tuning for glmnet models
 License: GPL-2
 LazyLoad: yes
