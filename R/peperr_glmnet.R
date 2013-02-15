@@ -168,7 +168,7 @@ aggregation.auc <- function (full.data = NULL, response, x, model, cplx = NULL,
 ### plot pecs        ###
 ########################
 
-plot.peperr.curves <- function(x,at.risk=TRUE,...) {
+plot.peperr.curves <- function(x,at.risk=TRUE,allErrors=FALSE, ...) {
   
   require(peperr)
 
@@ -183,11 +183,24 @@ plot.peperr.curves <- function(x,at.risk=TRUE,...) {
     }
   }
   
-  lines(x$attribute, x$null.model, type = "l", col = "blue", lwd = 2, lty = 1)
-  lines(x$attribute, perr(x, "632p"), type = "l", col= "black", lty = 2, lwd = 2)
-  lines(x$attribute, x$full.apparent, type = "l", col = "red", lty = 3, lwd = 2)
-  legend(x = "topleft", col = c("blue", "black", "red", "light grey"), lwd=c(2,2,2,1), 
-         lty = c(1:3, 1), legend = c("Null model", ".632+ estimate", "Full apparent", "Bootstrap samples"))
+  if (allErrors==FALSE) {
+     lines(x$attribute, x$null.model, type = "l", col = "blue", lwd = 2, lty = 1)
+     lines(x$attribute, perr(x, "632p"), type = "l", col= "black", lty = 2, lwd = 2)
+     lines(x$attribute, x$full.apparent, type = "l", col = "red", lty = 3, lwd = 2)
+     legend(x = "topleft", col = c("blue", "black", "red", "light grey"), lwd=c(2,2,2,1), 
+            lty = c(1:3, 1), legend = c("Null model", ".632+ estimate", "Full apparent", "Bootstrap samples"))
+  }
+
+  if (allErrors==TRUE) {
+    lines(x$attribute, x$null.model, type = "l", col = "blue", lwd = 2, lty = 1)
+    lines(x$attribute, perr(x, "632p"), type = "l", col= "black", lty = 2, lwd = 2)
+    lines(x$attribute, perr(x, "632"), type = "l", col= "brown", lty = 3, lwd = 2)
+    lines(x$attribute, perr(x, "NoInf"), type = "l", col= "green", lty = 4, lwd = 2)
+    lines(x$attribute, perr(x, "resample"), type = "l", col= "dark grey", lty = 5, lwd = 2)
+    lines(x$attribute, x$full.apparent, type = "l", col = "red", lty = 6, lwd = 2)
+    legend(x = "topleft", ncol=2, col = c("blue", "black","brown","green","dark grey","red", "light grey"), lwd=c(2,2,2,2,2,2,1), 
+           lty = c(1:6, 1), legend = c("Null model", ".632+ estimate",".632 estimate", "No Information","Out-of-bag average","Full apparent", "Bootstrap samples"))
+  }
   
   if (at.risk) {
      tmpxaxp   <- par("xaxp")
