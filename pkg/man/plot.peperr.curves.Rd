@@ -3,11 +3,12 @@
 \title{Plot method for prediction error curves of a peperr object}
 \description{Plots individual and aggregated prediction error estimates based on bootstrap samples.}
 \usage{
-plot.peperr.curves(x, at.risk=TRUE,...)
+plot.peperr.curves(x, at.risk=TRUE, allErrors=FALSE,...)
 }
 \arguments{
 \item{x}{\code{peperr} object.}
 \item{at.risk}{number at risk to be display. default is TRUE.}
+\item{allErrors}{Display .632, no information and average out-of-bag error in addition. default is FALSE.}
 \item{\dots}{additional arguments, not used.}
 
 }
@@ -48,7 +49,7 @@ plot(peperr.object)
 \keyword{models} \keyword{regression} \keyword{survival}
 
 \author{
-Thomas Hielscher \
+Thomas Hielscher 
 \email{t.hielscher@dkfz.de}
 }
 
