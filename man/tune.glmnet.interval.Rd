@@ -60,7 +60,7 @@ tune.glmnet.interval(parms, x, y,
 		} 
   }
 
- ret<-list(q.val=q.val, model=list(alpha=alpha, lambda=opt.lambda, cvreg=cv, fit=fit) ) 
+
 } 
 \author{Natalia Becker  natalia.becker at dkfz.de }
 
