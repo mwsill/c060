@@ -10,7 +10,7 @@
 }
 
 \usage{
-EPSGO(Q.func, bounds,  round.n, parms.coding="none", fminlower=0, flag.find.one.min =FALSE,
+EPSGO(Q.func, bounds,  round.n=5, parms.coding="none", fminlower=0, flag.find.one.min =FALSE,
 			show=c("none", "final", "all"), N= NULL, maxevals = 500,  
 	    pdf.name=NULL,  pdf.width=12,  pdf.height=12,   my.mfrow=c(1,1), 
 	    verbose=TRUE, seed=123,  ...  )
@@ -86,9 +86,6 @@ Froehlich, H. and Zell, A. (2005) "Effcient parameter selection for support vect
 machines in classification and regression via model-based global optimization"
 \emph{In Proc. Int. Joint Conf. Neural Networks,  1431-1438 }.
 }
-
-
-
 
 \keyword{ models }
 \keyword{ multivariate }
