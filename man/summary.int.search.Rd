@@ -25,24 +25,25 @@ summary.int.search(fit,digits = max(3, getOption("digits") - 3), verbose=TRUE,fi
  show first.n entries , default 5.
   }
 }
-
 \value{
-A List of following ellements 
+A List of following elements 
   \item{info}{
-  a data frame of four objects for optimal models
-    \item{alpha}{
-    a vector of alphas
+  a data frame of four objects for optimal models\cr
+    \describe{  
+      \item{alpha}{
+      a vector of alphas
+      }
+      \item{lambda}{
+      a vector of  penalization parameter lambda
+      }
+      \item{deviances}{
+      a vector of deviances
+      }
+      \item{n.features}{
+      a vector of number of features selected in each optimal model 
+      }
     }
-    \item{lambda}{
-    a vector of  penalization parameter lambda
-    }
-    \item{deviances}{
-    a vector of deviances
-    }
-    \item{n.features}{
-    a vector of number of features selected in each optimal model 
-    }
-  } 
+  }  
 \item{opt.alpha}{
   an optimal value for alpha
 }
