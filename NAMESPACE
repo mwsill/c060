@@ -9,6 +9,9 @@ export(stability.path,
        predictProb.glmnet,
     predictProb.coxnet,
     EPSGO,
-       tune.glmnet.interval,my.balanced.folds)
+       tune.glmnet.interval,my.balanced.folds,
+       summary.int.search,
+       plot.summary.int.search
+)
 
 
