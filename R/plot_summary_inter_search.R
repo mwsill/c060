@@ -5,8 +5,9 @@ plot.summary.int.search<-function(summary.int){
   breaks                        <- do.breaks(range(summary.int$info$deviance), 20)
   n_init                        <- 21 # number of initial alpha values at iteration zero
   summary.int$info$cols       <- level.colors(summary.int$info$deviance,at=breaks, col.regions = gray.colors)
+  n.features                  <- summary.int$info$n.features   
   
-  print(my.plot <- xyplot(log_lambda~alpha, data = summary.int$info, groups = cols, cex = 2, col = "black",  
+  print(my.plot <- xyplot(log_lambda~alpha, data = summary.int$info, groups = summary.int$info$cols, cex = 2, col = "black",  
                jitter.y=T, amount=0.01, ylab=expression(paste("log ",lambda)),xlab=expression(alpha),
                #             scales=list(x=list(log=T, equispaced.log = FALSE)), # x axis on log-scale
                panel = function(x, y, groups, ..., subscripts) { 
