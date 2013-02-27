@@ -14,10 +14,10 @@ plot.points.int.search(summary.int, start.N=21)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{fit}{
+  \item{summary.int}{
  an object as returned by the function \code{summary.int.search}.
   }
-  \item{srat.N}{
+  \item{start.N}{
  number of initial points, default 21.
   }
 }
