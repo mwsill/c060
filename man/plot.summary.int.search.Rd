@@ -10,7 +10,7 @@ Plot 'visited' points against iteration steps. start.N points are initial points
 }
 \usage{
 plot.summary.int.search(summary.int,cex=1, cex.lab=1.5, cex.axis=1.5,lwd=2)
-plot.points.int.search(summary.int, start.N=21)
+plot.points.int.search(summary.int, start.N=21,cex=1.5)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
