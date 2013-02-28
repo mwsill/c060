@@ -4,7 +4,7 @@
 function to plot a stability path 
 }
 \description{
-Given a desired family-wise error rate (FWER) and a stability path calculated with \code{stability.path} the function selects an stable set of features and plots the stability path and the corresponding regularization path.
+Given a desired family-wise error rate (FWER) and a stability path calculated with \code{stability.path} the function selects the stable set of features and plots the stability path and the corresponding regularization path.
 }
 \usage{
 plotstabpath(x, fwer=0.5,pi_thr=0.6, xvar=c("lambda", "norm", "dev"), col.all="black", col.sel="red", ...)
