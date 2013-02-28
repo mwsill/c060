@@ -36,5 +36,5 @@ summary.int.search<-function(fit,digits = max(3, getOption("digits") - 3), verbo
               "deviance = ",round(out$opt.error,digits)))
   }
   
-  return(out)
+  invisible(out)
 }
