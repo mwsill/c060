@@ -68,7 +68,7 @@ Martin Sill
 \references{
 Meinshausen N. and B\"uhlmann P. (2010), Stability Selection, Journal of the Royal Statistical Society: Series B (Statistical Methodology) Volume 72, Issue 4, pages 417???473.
 }
-\seealso{ \code{\link{glmnet},\link{stability.selection},\link{plotstabpath}}
+\seealso{ \code{\link{glmnet},\link{stability.selection},\link{plot.stabpath}}
 }
 \examples{\dontrun{
 #gaussian
@@ -76,17 +76,17 @@ set.seed(1234)
 x <- matrix(rnorm(100*1000,0,1),100,1000)
 y <- x[1:100,1:1000]\%*\% c(rep(2,5),rep(-2,5),rep(.1,990))
 res <- stability.path(y,x,weakness=1,mc.cores=2)
-plotstabpath(res)
+plot(res)
 
 #binomial
 y=sample(1:2,100,replace=TRUE)
 res <- stability.path(y,x,weakness=1,mc.cores=2,family="binomial")
-plotstabpath(res)
+plot(res)
     
 #multinomial
 y=sample(1:4,100,replace=TRUE)
 res <- stability.path(y,x,weakness=1,mc.cores=2,family="multinomial")
-plotstabpath(res)
+plot(res)
     
 #poisson
 N=100; p=1000
@@ -97,7 +97,7 @@ f = x[,seq(nzc)]\%*\%beta
 mu=exp(f)
 y=rpois(N,mu)
 res <- stability.path(y,x,weakness=1,mc.cores=2,family="poisson")
-plotstabpath(res)
+plot(res)
 
 #Cox
 library(survival)
@@ -112,7 +112,7 @@ ty=rexp(N,hx)
 tcens=rbinom(n=N,prob=.3,size=1)
 y=cbind(time=ty,status=1-tcens)
 res <- stability.path(y,x,weakness=1,mc.cores=2,family="cox")
-plotstabpath(res)
+plot(res)
 }
 }
 \keyword{stability selection}
