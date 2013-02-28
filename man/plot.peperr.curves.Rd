@@ -3,18 +3,22 @@
 \title{Plot method for prediction error curves of a peperr object}
 \description{Plots individual and aggregated prediction error estimates based on bootstrap samples.}
 \usage{
-plot.peperr.curves(x, at.risk=TRUE, allErrors=FALSE,...)
+plot.peperr.curves(x, at.risk=TRUE, allErrors=FALSE, bootRuns=FALSE, bootQuants=TRUE, bootQuants.level=0.95, leg.cex=0.7,...)
 }
 \arguments{
 \item{x}{\code{peperr} object.}
 \item{at.risk}{number at risk to be display. default is TRUE.}
 \item{allErrors}{Display .632, no information and average out-of-bag error in addition. default is FALSE.}
+\item{bootRuns}{Display individual out-of-bag bootstrap samples. default is FALSE.}
+\item{bootQuants}{Display pointwise out-of-bag bootstrap quantiles as shaded area. default is TRUE.}
+\item{bootQuants.level}{Quantile probabilities for pointwise out-of-bag bootstrap quantiles. default is 0.95, i.e. 2.5\% and 97.5\% quantiles.}
+\item{leg.cex}{size of legend text}
 \item{\dots}{additional arguments, not used.}
 
 }
 \details{
 This function is literally taken from \code{plot.peperr} in the \code{peperr} package.
-The display of prediction error curves is adapted to allow for numbers at risk.
+The display of prediction error curves is adapted to allow for numbers at risk and pointwise bootstrap quantiles.
 }
 \examples{
 \dontrun{
@@ -41,9 +45,11 @@ peperr.object <- peperr(response=y, x=x,
                         args.complexity=list(family="cox",nfolds=10),
                         indices=resample.indices(n=N, method="sub632", sample.n=10))
 
-plot.peperr.curves(peperr.object)
-# peperr
-plot(peperr.object)
+# pointwise bootstrap quantiles and all error types
+plot.peperr.curves(peperr.object, allErrors=TRUE)
+
+# individual bootstrap runs and selected error types
+plot.peperr.curves(peperr.object, allErrors=FALSE, bootRuns=TRUE)
 }
 }
 \keyword{models} \keyword{regression} \keyword{survival}
