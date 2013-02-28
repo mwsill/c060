@@ -9,7 +9,7 @@ Produces a plot for summary object of a fitted interval search model.
 Plot 'visited' points against iteration steps. start.N points are initial points selected before interval search starts.
 }
 \usage{
-plot.summary.int.search(summary.int)
+plot.summary.int.search(summary.int,cex=1, cex.lab=1.5, cex.axis=1.5,lwd=2)
 plot.points.int.search(summary.int, start.N=21)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -17,6 +17,11 @@ plot.points.int.search(summary.int, start.N=21)
   \item{summary.int}{
  an object as returned by the function \code{summary.int.search}.
   }
+  \item{cex}{ global magnification, default = 1. }
+  \item{cex.lab}{ labels magnification, default = 1.5. }
+  \item{cex.axis}{ axis magnification, default = 1.5. }
+  \item{lwd}{ line width, default = 2. }
+   
   \item{start.N}{
  number of initial points, default 21.
   }
