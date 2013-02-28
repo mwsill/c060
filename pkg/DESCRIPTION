@@ -1,6 +1,6 @@
 Package: c060
-Version: 0.16
-Date: 2012-06-09
+Version: 0.17
+Date: 2013-02-28
 Author: Martin Sill, Thomas Hielscher, Manuela Zucknick, Natalia Becker.
 Maintainer: Martin Sill <m.sill@dkfz.de>
 Title: Additional variable selection, model validation and parameter tuning functions for glmnet models
