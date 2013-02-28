@@ -43,7 +43,7 @@ Martin Sill \
 \references{
 Meinshausen N. and B\"uhlmann P. (2010), Stability Selection, Journal of the Royal Statistical Society: Series B (Statistical Methodology) Volume 72, Issue 4, pages 417???473.
 }
-\seealso{ \code{\link{plotstabpath},\link{stability.path}}
+\seealso{ \code{\link{plot.stabpath},\link{stability.path}}
 }
 \examples{
 \dontrun{

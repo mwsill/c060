@@ -1,5 +1,4 @@
 export(stability.path,
-       plotstabpath,
        stability.selection,
        aggregation.auc,
        complexity.glmnet,
@@ -17,3 +16,4 @@ export(stability.path,
 )
 
 
+S3method("plot", "stabpath")

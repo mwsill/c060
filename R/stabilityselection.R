@@ -36,7 +36,7 @@ stability.path <- function(y,x,size=0.632,steps=100,weakness=1,mc.cores=getOptio
 	x <- x/length(res)
 	qs <- colMeans(qmat)
 	out <- list(fit=fit,x=x,qs=qs)	
-	class(out) <- "x" 
+	class(out) <- "stabpath" 
 	return(out)
 }
 
@@ -78,7 +78,7 @@ stability.selection <- function(x,fwer,pi_thr=0.6){
 }
 
 #plot penalization and stability path 
-plotstabpath <- function(x,fwer=0.5,pi_thr=0.6, xvar=c("lambda", "norm", "dev"), col.all="black", col.sel="red",...){
+plot.stabpath <- function(x,fwer=0.5,pi_thr=0.6, xvar=c("lambda", "norm", "dev"), col.all="black", col.sel="red",...){
   sel <- stability.selection(x,fwer,pi_thr)
   if(class(x$fit)[1]=="multnet"){
     beta = as.matrix(Reduce("+",x$fit$beta))
