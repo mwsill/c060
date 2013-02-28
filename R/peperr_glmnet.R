@@ -168,38 +168,56 @@ aggregation.auc <- function (full.data = NULL, response, x, model, cplx = NULL,
 ### plot pecs        ###
 ########################
 
-plot.peperr.curves <- function(x,at.risk=TRUE,allErrors=FALSE, ...) {
+plot.peperr.curves <- function(x,at.risk=TRUE,allErrors=FALSE,  bootRuns=FALSE, bootQuants=TRUE, bootQuants.level=0.95, leg.cex=0.7, ...) {
   
   require(peperr)
 
+  if (bootRuns) bootQuants <- FALSE
+  
   plot(x$attribute, x$null.model, type = "n", las=1,
        col = "blue", xlab = "Evaluation time points", 
        ylab = "Prediction error", main = "Prediction error curves", 
        ylim = c(0, max(perr(x), x$full.apparent, x$null.model) + 0.1))
   
-  if (length(x$sample.error) > 1) {
+  if (length(x$sample.error) > 1 & bootRuns==TRUE) {
     for (i in 1:(length(x$sample.error))) {
       lines(x$attribute, x$sample.error[[i]], type = "l", col = "light grey", lty = 1)
     }
   }
+
+  if (length(x$sample.error) > 1 & bootQuants==TRUE) {
+    boots  <- do.call("rbind",x$sample.error)
+    quants <- apply(boots, 2, function(d) quantile(d, probs=c((1-bootQuants.level)/2,1 - (1-bootQuants.level)/2)))
+    polygon(c(x$attribute,rev(x$attribute)),c(quants[1,],rev(quants[2,])), col="light grey", border="light grey")
+  }
   
   if (allErrors==FALSE) {
      lines(x$attribute, x$null.model, type = "l", col = "blue", lwd = 2, lty = 1)
-     lines(x$attribute, perr(x, "632p"), type = "l", col= "black", lty = 2, lwd = 2)
-     lines(x$attribute, x$full.apparent, type = "l", col = "red", lty = 3, lwd = 2)
-     legend(x = "topleft", col = c("blue", "black", "red", "light grey"), lwd=c(2,2,2,1), 
-            lty = c(1:3, 1), legend = c("Null model", ".632+ estimate", "Full apparent", "Bootstrap samples"))
+     lines(x$attribute, perr(x, "632p"), type = "l", col= "black", lty = 1, lwd = 2)
+     lines(x$attribute, x$full.apparent, type = "l", col = "red", lty = 1, lwd = 2)
+     if (bootRuns==TRUE) {
+       legend(x = "topleft", col = c("blue", "black", "red", "light grey"), lwd=c(2,2,2,1), cex=leg.cex,
+            lty = 1, legend = c("Null model", ".632+ estimate", "Full apparent", "Bootstrap samples"))
+     } else {
+       legend(x = "topleft", col = c("blue", "black", "red"), lwd=c(2,2,2), cex=leg.cex,
+              lty = 1, legend = c("Null model", ".632+ estimate", "Full apparent"))
+     }   
   }
 
   if (allErrors==TRUE) {
     lines(x$attribute, x$null.model, type = "l", col = "blue", lwd = 2, lty = 1)
-    lines(x$attribute, perr(x, "632p"), type = "l", col= "black", lty = 2, lwd = 2)
-    lines(x$attribute, perr(x, "632"), type = "l", col= "brown", lty = 3, lwd = 2)
-    lines(x$attribute, perr(x, "NoInf"), type = "l", col= "green", lty = 4, lwd = 2)
-    lines(x$attribute, perr(x, "resample"), type = "l", col= "dark grey", lty = 5, lwd = 2)
-    lines(x$attribute, x$full.apparent, type = "l", col = "red", lty = 6, lwd = 2)
-    legend(x = "topleft", ncol=2, col = c("blue", "black","brown","green","dark grey","red", "light grey"), lwd=c(2,2,2,2,2,2,1), 
-           lty = c(1:6, 1), legend = c("Null model", ".632+ estimate",".632 estimate", "No Information","Out-of-bag average","Full apparent", "Bootstrap samples"))
+    lines(x$attribute, perr(x, "632p"), type = "l", col= "black", lty = 1, lwd = 2)
+    lines(x$attribute, perr(x, "632"), type = "l", col= "brown", lty = 1, lwd = 2)
+    lines(x$attribute, perr(x, "NoInf"), type = "l", col= "green", lty = 1, lwd = 2)
+    lines(x$attribute, perr(x, "resample"), type = "l", col= "dark grey", lty = 1, lwd = 2)
+    lines(x$attribute, x$full.apparent, type = "l", col = "red", lty = 1, lwd = 2)
+    if (bootRuns==TRUE) {
+      legend(x = "topleft", ncol=2, col = c("blue", "black","brown","green","dark grey","red", "light grey"), lwd=c(2,2,2,2,2,2,1), cex=leg.cex,
+           lty = 1, legend = c("Null model", ".632+ estimate",".632 estimate", "No Information","Out-of-bag average","Full apparent", "Bootstrap samples"))
+    } else {
+      legend(x = "topleft", ncol=2, col = c("blue", "black","brown","green","dark grey","red"), lwd=c(2,2,2,2,2,2), cex=leg.cex,
+             lty = 1, legend = c("Null model", ".632+ estimate",".632 estimate", "No Information","Out-of-bag average","Full apparent"))
+    }
   }
   
   if (at.risk) {
