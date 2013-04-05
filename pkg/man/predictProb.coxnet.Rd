@@ -5,10 +5,11 @@
 Extracts predicted survival probabilities from survival model fitted by glmnet, providing an interface as required by \code{pmpec}. 
 }
 \usage{
-predictProb.coxnet(object, x, times, complexity, ...)
+\method{predictProb}{coxnet}(object, response, x, times, complexity, ...)
 }
 \arguments{
-\item{object}{a fitted model of class \code{glmnet}.}
+\item{object}{a fitted model of class \code{glmnet}}
+\item{response}{a two-column matrix with columns named 'time' and 'status'. The latter is a binary variable, with '1' indicating death, and '0' indicating right censored. The function \code{Surv()} in package survival produces such a matrix}
 \item{x}{\code{n*p} matrix of covariates.}
 \item{times}{vector of evaluation time points.}
 \item{complexity}{lambda penalty value.}

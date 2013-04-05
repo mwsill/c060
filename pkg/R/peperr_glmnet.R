@@ -51,7 +51,7 @@ complexity.glmnet <- function (response, x, full.data, ...)
     lambda
 }
 
-predictProb.coxnet <- predictProb.glmnet <- function (object, x, times, complexity,  ...) 
+predictProb.coxnet <- predictProb.glmnet <- function (object, response, x, times, complexity,  ...) 
 {
     require(glmnet)    
     lp       <- as.numeric(predict(object, newx=data.matrix(x),s=complexity, type="link"))
@@ -168,7 +168,7 @@ aggregation.auc <- function (full.data = NULL, response, x, model, cplx = NULL,
 ### plot pecs        ###
 ########################
 
-plot.peperr.curves <- function(x,at.risk=TRUE,allErrors=FALSE,  bootRuns=FALSE, bootQuants=TRUE, bootQuants.level=0.95, leg.cex=0.7, ...) {
+Plot.peperr.curves <- function(x,at.risk=TRUE,allErrors=FALSE,  bootRuns=FALSE, bootQuants=TRUE, bootQuants.level=0.95, leg.cex=0.7, ...) {
   
   require(peperr)
 

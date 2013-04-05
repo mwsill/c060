@@ -1,5 +1,5 @@
-\name{summary.int.search}
-\alias{summary.int.search}
+\name{summary.intsearch}
+\alias{summary.intsearch}
 \title{
 Summary method for interval search models
 }
@@ -7,15 +7,15 @@ Summary method for interval search models
 Produces a summary of a fitted interval search model
 }
 \usage{
-summary.int.search(fit,digits = max(3, getOption("digits") - 3), verbose=TRUE,first.n=5)
-
+\method{summary}{intsearch}(object,digits = max(3, getOption("digits") - 3), verbose=TRUE,first.n=5,...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{fit}{ an object as returned by the function \code{EPSGO}.}
+  \item{object}{ an object of class \code{intsearch} as returned by the function \code{EPSGO}.}
   \item{digits}{ digits after the comma }
   \item{verbose}{ default set to TRUE.  }
   \item{first.n}{ show first.n entries , default 5. }
+  \item{...}{additional argument(s)}
 }
 
 \value{

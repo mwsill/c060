@@ -24,7 +24,7 @@ Natalia Becker  \
 \email{natalia.becker@dkfz.de}
 }
 
-\seealso{ \code{\link{EPSGO}}, \code{\link{summary.int.search}}
+\seealso{ \code{\link{EPSGO}}, \code{\link{summary.intsearch}}
 }
 
 \keyword{system}

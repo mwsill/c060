@@ -5,10 +5,11 @@
 Extracts predicted survival probabilities from survival model fitted by glmnet, providing an interface as required by \code{pmpec}. 
 }
 \usage{
-predictProb.glmnet(object, x, times, complexity, ...)
+\method{predictProb}{glmnet}(object, response, x, times, complexity, ...)
 }
 \arguments{
 \item{object}{a fitted model of class \code{glmnet}.}
+\item{response}{response variable. Quantitative for \code{family="gaussian"}, or \code{family="poisson"} (non-negative counts). For \code{family="binomial"} should be either a factor with two levels, or a two-column matrix of counts or proportions. For \code{family="multinomial"}, can be a nc>=2 level factor, or a matrix with nc columns of counts or proportions. }
 \item{x}{\code{n*p} matrix of covariates.}
 \item{times}{vector of evaluation time points.}
 \item{complexity}{lambda penalty value.}

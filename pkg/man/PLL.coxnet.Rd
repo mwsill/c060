@@ -5,7 +5,7 @@
 Extracts the predictive partial log-likelihood from a glmnet Cox PH model fit.
 }
 \usage{
-PLL.coxnet(object, newdata, newtime, newstatus, complexity, ...)
+\method{PLL}{coxnet}(object, newdata, newtime, newstatus, complexity, ...)
 }
 \arguments{
   \item{object}{fitted model of class \code{coxnet}.}

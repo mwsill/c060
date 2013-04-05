@@ -1,6 +1,7 @@
 
 ###########################################################################################################
-summary.int.search<-function(fit,digits = max(3, getOption("digits") - 3), verbose=TRUE, first.n=5){
+summary.intsearch<-function(object,digits = max(3, getOption("digits") - 3), verbose=TRUE, first.n=5, ...){
+  fit <- object
   alphas <- fit$Xtrain[,1]
   lambdas <- unlist(sapply(sapply(fit$model, "[", "model"), "[", "lambda"))
   deviances <- fit$Ytrain
@@ -21,9 +22,9 @@ summary.int.search<-function(fit,digits = max(3, getOption("digits") - 3), verbo
   out <- list(info=data.frame(alpha=alphas,lambda=lambdas,deviance=deviances,n.features=n.features),
               opt.alpha=opt.alpha, opt.lambda=opt.lambda, opt.error=opt.error,
               opt.models=opt.models)
+  class(out) <- "summary.int"
   
   if(verbose){
-    
     cat("Summary interval search \n\n")
     cat(paste("show the first", first.n,"out of",nrow(out$info),"entries\n"))
     print(out$info[1:first.n,])
@@ -35,6 +36,5 @@ summary.int.search<-function(fit,digits = max(3, getOption("digits") - 3), verbo
               "lambda = ",round(out$opt.lambda,digits),
               "deviance = ",round(out$opt.error,digits)))
   }
-  
   invisible(out)
 }
