@@ -55,15 +55,15 @@ EPSGO<- function(
 	#	 	 neval = N
 	#	6.	REPEAT
 	#					6.1  Find a new p, with max E[I(p)] ( the same as min -E[I(p)] )  
-	#					˜p = argmaxp E[I(p)] (computed by DIRECT)
+	#					?p = argmaxp E[I(p)] (computed by DIRECT)
 	#					# Important! Direct.R calculate global min! --> change Problem function
 	#					6.2 compute std. dev. and mean of E[I(p)]
 	#					6.3 new p, new Q(p) 
-	#						  Qnew = Q(˜p)
+	#						  Qnew = Q(?p)
 	#					6.4 Add the new p ?
 	#							if Qnew < Qmin
 	#								Qmin = Qnew
-	#								ˆp = ˜p
+	#								?p = ?p
 	#							end
 	#					6.5 update Online GP
 	#							neval = neval + 1
@@ -452,20 +452,23 @@ EPSGO<- function(
 	# define the set of points with the same fmin
 		tmp.set<-data.frame(Xtrain, f=Ytrain)
 		points.fmin<- tmp.set[tmp.set$f == fmin, ,drop=FALSE  ]
-		
-	return(list(fmin =fmin,
-						xmin = xmin, 
-						iter = loop,
-						neval =neval,
-						maxevals= maxevals,
-						seed =seed,
-						bounds = bounds,
-						Q.func =Q.func,
-						points.fmin =points.fmin,
-						Xtrain = Xtrain, 
-						Ytrain= Ytrain, 
-						gp.seed=gp.seed,
-						model.list = model.list 
-			)  )
+	
+  out <- list(fmin =fmin,
+	     xmin = xmin, 
+	     iter = loop,
+	     neval =neval,
+	     maxevals= maxevals,
+	     seed =seed,
+	     bounds = bounds,
+	     Q.func =Q.func,
+	     points.fmin =points.fmin,
+	     Xtrain = Xtrain, 
+	     Ytrain= Ytrain, 
+	     gp.seed=gp.seed,
+	     model.list = model.list 
+	) 
+  
+  class(out) <- "intsearch"
+	return(out)
 	
 }
