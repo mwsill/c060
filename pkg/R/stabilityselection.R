@@ -1,6 +1,3 @@
-#Change log:
-# 13-06-2012 (MZ):
-# - changes to plot.x() in a fashion similar to glmnet:::plotCoef; allow users to choose colours
 require(glmnet)
 require(parallel)
 
