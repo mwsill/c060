@@ -1,4 +1,4 @@
-import(peperr)
+import(glmnet, survival, parallel, mlegp, tgp, peperr, penalizedSVM, lattice)
 
 export(stability.path,
        stability.selection,

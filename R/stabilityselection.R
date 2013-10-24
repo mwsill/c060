@@ -1,5 +1,5 @@
-require(glmnet)
-require(parallel)
+#require(glmnet)
+#require(parallel)
 
 stability.path <- function(y,x,size=0.632,steps=100,weakness=1,mc.cores=getOption("mc.cores", 2L),...){
 	fit <- glmnet(x,y,...)
