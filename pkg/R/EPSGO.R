@@ -70,8 +70,8 @@ EPSGO<- function(
 	#			UNTIL convergence
 	
 	
-	require(tgp) #lhs  - Latin Hypercube sampling function
-	require(mlegp)
+	#require(tgp) #lhs  - Latin Hypercube sampling function
+	#require(mlegp)
 	
 	
 	print("parms.coding")

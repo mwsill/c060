@@ -4,9 +4,9 @@ Date: 2013-04-17
 Author: Martin Sill, Thomas Hielscher, Manuela Zucknick, Natalia Becker.
 Maintainer: Martin Sill <m.sill@dkfz.de>
 Title: Extended Inference for Lasso and Elastic-Net Regularized Cox and Generalized Linear Models
-Depends: glmnet, survival, parallel, mlegp, tgp, peperr, penalizedSVM
-Imports: glmnet, survival, parallel, mlegp, tgp, peperr, penalizedSVM
-Suggests: survival
+Depends: 
+Imports: glmnet, survival, parallel, mlegp, tgp, peperr, penalizedSVM, lattice
+Suggests: 
 Description: c060 provides additional functions to perform stability selection, model validation and parameter tuning for glmnet models
 License: GPL-2
 LazyLoad: yes
