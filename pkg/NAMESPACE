@@ -11,6 +11,7 @@ export(stability.path,
        get.cofn.int.search
        )
 
+S3method("print","stabpath")
 S3method("plot","stabpath")
 S3method("PLL","coxnet")
 S3method("predictProb","glmnet")

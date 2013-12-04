@@ -4,19 +4,24 @@
 function to estimate a stable set of variables  
 }
 \description{
-Given a desired family-wise error rate (FWER) and a stability path calculated with \code{stability.path} the function selects a stable set of features.
+Given a desired type I error rate and a stability path calculated with \code{stability.path} the function selects a stable set of variables.
 }
 \usage{
-stability.selection(x,fwer,pi_thr=0.6)
+stability.selection(x,error=0.05,type=c("pfer","pcer"),pi_thr=0.6)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{
  an object of class "stabpath" as returned by the function \code{stability.path}.
 }
-  \item{fwer}{
- the desired family-wise error rate (fwer), e.g. the probability that at least one feature in the estimated set of stable features has been falsely selected. 
+  \item{error}{
+the desired type I error level w.r.t. to the chosen type I error rate.
 }
+ \item{type}{
+The type I error rate used for controlling the number falsely selected variables. If \code{type="pfer"} the per-family error rate is controlled and \code{error} corresponds to the expected number of type I errors.
+Selecting \code{type="pfer"} and \code{error} in the range of $0 > \code{error} < 1$ will control the family-wise error rate, i.e. the probability that at least one variable in the estimated stable set has been falsely selected.
+If \code{type="pcer"} the per-comparison error rate is controlled and \code{error} corresponds to the expected number of type I errors divided by the number variables. 
+ }
   \item{pi_thr}{
 the threshold used for the stability selection, should be in the range of $0.5 > pi_thr < 1$.  
 }
@@ -32,8 +37,9 @@ a list of four objects
   \item{lpos}{
   the position of the penalization parameter in the regularization path
   }
-  \item{fwer}{
-  the controlled family-wise error rate (fwer), e.g. the probability that at least one feature in the estimated set of stable features     has been falsely selected.
+  \item{error}{the desired type I error level w.r.t. to the chosen type I error rate
+  }
+   \item{type}{the type I error rate 
   }
 }
 \author{
@@ -41,7 +47,7 @@ Martin Sill \
 \email{m.sill@dkfz.de}
 }
 \references{
-Meinshausen N. and B\"uhlmann P. (2010), Stability Selection, Journal of the Royal Statistical Society: Series B (Statistical Methodology) Volume 72, Issue 4, pages 417???473.
+Meinshausen N. and Buehlmann P. (2010), Stability Selection, Journal of the Royal Statistical Society: Series B (Statistical Methodology) Volume 72, Issue 4, pages 417-473.
 }
 \seealso{ \code{\link{plot.stabpath},\link{stability.path}}
 }
@@ -52,6 +58,6 @@ set.seed(1234)
 x=matrix(rnorm(100*1000,0,1),100,1000)
 y <- x[1:100,1:1000]\%*\%c(rep(2,5),rep(-2,5),rep(.1,990))
 res <- stability.path(y,x,weakness=1,mc.cores=2)
-stability.selection(res,fwer=.5)
+stability.selection(res,error=0.05,type="pfer")
 }}
 \keyword{stability selection}
