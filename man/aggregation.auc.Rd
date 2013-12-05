@@ -5,8 +5,8 @@
 Evaluate the area under the ROC curve for a fitted model on new data. To be used as argument \code{aggregation.fun} in \code{peperr} call. 
 }
 \usage{
-aggregation.auc(full.data=NULL, response, x, model, cplx=NULL,  type=c("apparent", "noinf"), 
-   fullsample.attr = NULL, ...)
+aggregation.auc(full.data=NULL, response, x, model, cplx=NULL,  
+type=c("apparent", "noinf"), fullsample.attr = NULL, \dots)
 }
 \arguments{
 \item{full.data}{passed from \code{peperr}, but not used for calculation.}

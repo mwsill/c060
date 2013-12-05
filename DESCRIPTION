@@ -1,6 +1,6 @@
 Package: c060
 Version: 0.2-2
-Date: 2013-10-25
+Date: 2013-12-05
 Author: Martin Sill, Thomas Hielscher, Manuela Zucknick, Natalia Becker.
 Maintainer: Martin Sill <m.sill@dkfz.de>
 Title: Extended Inference for Lasso and Elastic-Net Regularized Cox and Generalized Linear Models
