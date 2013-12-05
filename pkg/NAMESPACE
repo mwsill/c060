@@ -7,8 +7,9 @@ export(stability.path,
        fit.glmnet,
        Plot.peperr.curves,
        EPSGO,
-       tune.glmnet.interval,my.balanced.folds,
-       get.cofn.int.search
+       tune.glmnet.interval,
+       my.balanced.folds,
+       coef.opt.intsearch
        )
 
 S3method("print","stabpath")
@@ -16,5 +17,5 @@ S3method("plot","stabpath")
 S3method("PLL","coxnet")
 S3method("predictProb","glmnet")
 S3method("predictProb","coxnet")
-S3method("plot","summary.int")
 S3method("summary","intsearch")
+S3method("plot","sum.intsearch")

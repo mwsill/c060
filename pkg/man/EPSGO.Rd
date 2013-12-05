@@ -1,8 +1,6 @@
 \name{EPSGO}
 
 \alias{EPSGO}
-\alias{Direct}
-\alias{ExpImprovement}
 
 \title{  Finds an optimal solution  }
 \description{
@@ -10,10 +8,11 @@
 }
 
 \usage{
-EPSGO(Q.func, bounds,  round.n=5, parms.coding="none", fminlower=0, flag.find.one.min =FALSE,
-			show=c("none", "final", "all"), N= NULL, maxevals = 500,  
-	    pdf.name=NULL,  pdf.width=12,  pdf.height=12,   my.mfrow=c(1,1), 
-	    verbose=TRUE, seed=123,  ...  )
+EPSGO(Q.func, bounds,  round.n=5, parms.coding="none",
+  fminlower=0, flag.find.one.min =FALSE,
+  show=c("none", "final", "all"), N= NULL, maxevals = 500,
+  pdf.name=NULL,  pdf.width=12,  pdf.height=12, my.mfrow=c(1,1),
+  verbose=TRUE, seed=123,  \dots  )
 }
 
 \arguments{
@@ -27,10 +26,10 @@ EPSGO(Q.func, bounds,  round.n=5, parms.coding="none", fminlower=0, flag.find.on
   \item{N}{ define the number of start points, see details. }
   \item{maxevals}{ the maximum number of DIRECT function evaluations, default: 500.   }
   \item{pdf.name}{pdf name      }   
-  \item{pdf.width}{ default 12 }
-  \item{pdf.height}{ default 12 }
-  \item{my.mfrow}{ default c(1,1) }
-  \item{verbose}{ verbose? default TRUE. }
+  \item{pdf.width}{ default: 12 }
+  \item{pdf.height}{ default: 12 }
+  \item{my.mfrow}{ default: c(1,1) }
+  \item{verbose}{ verbose? default: TRUE. }
   \item{seed}{ seed }
   \item{\dots}{ additional argument(s) }
 }
