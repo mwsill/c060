@@ -12,7 +12,7 @@ Given a desired family-wise error rate (FWER) and a stability path calculated wi
 }
 \arguments{
   \item{x}{
- an object of class "stabpath" as returned by the function \code{stability.path}.
+ an object of class "stabpath" as returned by the function \code{stabpath}.
 }
 \item{error}{
 the desired type I error level w.r.t. to the chosen type I error rate.
@@ -62,7 +62,7 @@ Martin Sill \
 \references{
 Meinshausen N. and Buehlmann P. (2010), Stability Selection, Journal of the Royal Statistical Society: Series B (Statistical Methodology) Volume 72, Issue 4, pages 417-473.
 }
-\seealso{ \code{\link{stability.selection},\link{stability.path}}
+\seealso{ \code{\link{stabsel},\link{stabpath}}
 }
 \examples{
 \dontrun{
@@ -70,7 +70,7 @@ Meinshausen N. and Buehlmann P. (2010), Stability Selection, Journal of the Roya
 set.seed(1234)
 x=matrix(rnorm(100*1000,0,1),100,1000)
 y <- x[1:100,1:1000]\%*\%c(rep(2,5),rep(-2,5),rep(.1,990))
-res <- stability.path(y,x,weakness=1,mc.cores=2)
+res <- stabpath(y,x,weakness=1,mc.cores=2)
 plot(res,fwer=.5)
 }
 }

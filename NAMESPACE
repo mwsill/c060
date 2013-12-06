@@ -1,7 +1,7 @@
 import(glmnet, survival, parallel, mlegp, tgp, peperr, penalizedSVM, lattice)
 
-export(stability.path,
-       stability.selection,
+export(stabpath,
+       stabsel,
        aggregation.auc,
        complexity.glmnet,
        fit.glmnet,
@@ -9,7 +9,8 @@ export(stability.path,
        EPSGO,
        tune.glmnet.interval,
        my.balanced.folds,
-       coef.opt.intsearch
+       coef.opt.intsearch,
+       get.cofn.int.search
        )
 
 S3method("print","stabpath")

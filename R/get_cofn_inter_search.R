@@ -9,7 +9,6 @@ get.cofn.int.search<-function(model){
   cofn <- cof[which(cof != 0)]
   names(cofn) <- names.cof[which(cof != 0)] 
   bet <- res$beta[match(names(cofn), rownames(res$beta)),]
-  
   return(cofn)
 }  
 
