@@ -1,40 +1,40 @@
 #require(glmnet)
 #require(parallel)
 
-stability.path <- function(y,x,size=0.632,steps=100,weakness=1,mc.cores=getOption("mc.cores", 2L),...){
-	fit <- glmnet(x,y,...)
-	if(class(fit)[1]=="multnet"|class(fit)[1]=="lognet") y <- as.factor(y)
+stabpath <- function(y,x,size=0.632,steps=100,weakness=1,mc.cores=getOption("mc.cores", 2L),...){
+  fit <- glmnet(x,y,...)
+  if(class(fit)[1]=="multnet"|class(fit)[1]=="lognet") y <- as.factor(y)
   #if(class(fit)[1]=="lognet") y <- as.logical(y) 
-	p <- ncol(x)
-	#draw subsets
+  p <- ncol(x)
+  #draw subsets
   subsets <- sapply(1:steps,function(v){sample(1:nrow(x),nrow(x)*size)})
   
-	# parallel computing depending on OS
-	# UNIX/Mac
-	if (.Platform$OS.type!="windows") {
-	  res <- mclapply(1:steps,mc.cores=mc.cores,glmnet.subset,subsets,x,y,lambda=fit$lambda,weakness,p,...)
-	} else {
-	  # Windows  
-	  cl  <- makePSOCKcluster(mc.cores)
-	  clusterExport(cl,c("glmnet","drop0"))
-	  res <- parLapply(cl, 1:steps,glmnet.subset,subsets,x,y,lambda=fit$lambda,weakness,p,...)
-	  stopCluster(cl)
-	}
+  # parallel computing depending on OS
+  # UNIX/Mac
+  if (.Platform$OS.type!="windows") {
+    res <- mclapply(1:steps,mc.cores=mc.cores,glmnet.subset,subsets,x,y,lambda=fit$lambda,weakness,p,...)
+  } else {
+    # Windows  
+    cl  <- makePSOCKcluster(mc.cores)
+    clusterExport(cl,c("glmnet","drop0"))
+    res <- parLapply(cl, 1:steps,glmnet.subset,subsets,x,y,lambda=fit$lambda,weakness,p,...)
+    stopCluster(cl)
+  }
   
   #merging
-	res <- res[unlist(lapply(lapply(res,dim),function(x) x[2]==dim(res[[1]])[2]))]
-	x <- as.matrix(res[[1]])
-	qmat <- matrix(ncol=ncol(res[[1]]),nrow=length(res))
-	qmat[1,] <- colSums(as.matrix(res[[1]]))
-	for(i in 2:length(res)){
-  	qmat[i,] <- colSums(as.matrix(res[[i]]))
-		x <- x + as.matrix(res[[i]])
-	}
-	x <- x/length(res)
-	qs <- colMeans(qmat)
-	out <- list(fit=fit,x=x,qs=qs)	
-	class(out) <- "stabpath" 
-	return(out)
+  res <- res[unlist(lapply(lapply(res,dim),function(x) x[2]==dim(res[[1]])[2]))]
+  x <- as.matrix(res[[1]])
+  qmat <- matrix(ncol=ncol(res[[1]]),nrow=length(res))
+  qmat[1,] <- colSums(as.matrix(res[[1]]))
+  for(i in 2:length(res)){
+    qmat[i,] <- colSums(as.matrix(res[[i]]))
+    x <- x + as.matrix(res[[i]])
+  }
+  x <- x/length(res)
+  qs <- colMeans(qmat)
+  out <- list(fit=fit,x=x,qs=qs)	
+  class(out) <- "stabpath" 
+  return(out)
 }
 
 #internal function used by lapply 
@@ -44,11 +44,11 @@ glmnet.subset <- function(index,subsets,x,y,lambda,weakness,p,...){
            ,penalty.factor= 1/runif(p,weakness,1),...)$beta!=0
   }else{
     if(is.factor(y)&length(levels(y))>2){
-    temp <- glmnet(x[subsets[,index],],y[subsets[,index]],lambda=lambda
-                       ,penalty.factor= 1/runif(p,weakness,1),...)[[2]]
-    temp <- lapply(temp,as.matrix)
+      temp <- glmnet(x[subsets[,index],],y[subsets[,index]],lambda=lambda
+                     ,penalty.factor= 1/runif(p,weakness,1),...)[[2]]
+      temp <- lapply(temp,as.matrix)
       Reduce("+",lapply(temp,function(x) x!=0))
-    
+      
     }	
     else{
       glmnet(x[subsets[,index],],y[subsets[,index]],lambda=lambda
@@ -57,8 +57,9 @@ glmnet.subset <- function(index,subsets,x,y,lambda,weakness,p,...){
   }	
 }
 
+
 #performs error control and returns estimated set of stable variables and corresponding lambda
-stability.selection <- function(x,error=0.05,type=c("pfer","pcer"),pi_thr=0.6){
+stabsel <- function(x,error=0.05,type=c("pfer","pcer"),pi_thr=0.6){
   if(pi_thr <= 0.5 | pi_thr >= 1) stop("pi_thr needs to be > 0.5 and < 1!")
   if(class(x$fit)[1]=="multnet"){
   p <- dim(x$fit$beta[[1]])[1]
@@ -73,7 +74,7 @@ stability.selection <- function(x,error=0.05,type=c("pfer","pcer"),pi_thr=0.6){
          "pfer"={
           qv <- ceiling(sqrt(error * (2*pi_thr-1)*p)) }
          )
-  if(x$qs[length(x$qs)]<=qv){ stop("error control not possible, decrease type I error")
+  if(x$qs[length(x$qs)]<=qv){ lpos <- length(x$qs)
     }else{
   lpos <- which(x$qs>qv)[1]
   }
@@ -93,7 +94,7 @@ print.stabpath <- function(x,...){
 #plot penalization and stability path 
 plot.stabpath <- function(x,error=0.05,type=c("pfer","pcer"),pi_thr=0.6,xvar=c("lambda", "norm", "dev")
                           , col.all="black", col.sel="red",...){
-  sel <- stability.selection(x,error,type,pi_thr)
+  sel <- stabsel(x,error,type,pi_thr)
   if(class(x$fit)[1]=="multnet"){
     beta = as.matrix(Reduce("+",x$fit$beta))
   }else{
