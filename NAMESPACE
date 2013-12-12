@@ -9,7 +9,7 @@ export(stabpath,
        EPSGO,
        tune.glmnet.interval,
        my.balanced.folds,
-       coef.opt.intsearch
+       coef.optmodel
        )
 
 S3method("print","stabpath")
