@@ -2,7 +2,7 @@
 \alias{plot.summary.int}
 \title{
 Plot Summary object for interval search models
-}
+} 
 \description{
 Produces a plot for summary object of a fitted interval search model.
 Plot 'visited' points against iteration steps. start.N points are initial points selected before interval search starts.
