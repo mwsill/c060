@@ -1,6 +1,6 @@
 
 ###########################################################################################################
-coef.opt.intsearch<-function(object,...){
+coef.optmodel<-function(object,...){
   # get coef for a object from fit object after running interval search 
    
   f1 <- object$cvreg

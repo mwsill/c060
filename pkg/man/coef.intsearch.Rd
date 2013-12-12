@@ -1,5 +1,5 @@
-\name{coef.opt.intsearch}
-\alias{coef.opt.intsearch}
+\name{coef.optmodel}
+\alias{coef.optmodel}
 
 \title{
 Get coefficients for a model 
@@ -8,7 +8,7 @@ Get coefficients for a model
 Get coefficients for a model after applying interval search for tuning parameters 
 }
 \usage{
-coef.opt.intsearch(object,\dots)
+coef.optmodel(object,\dots)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
