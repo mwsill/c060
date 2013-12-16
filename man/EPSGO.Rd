@@ -1,6 +1,6 @@
-\name{EPSGO}
+\name{epsgo}
 
-\alias{EPSGO}
+\alias{epsgo}
 
 \title{  Finds an optimal solution  }
 \description{
@@ -8,7 +8,7 @@
 }
 
 \usage{
-EPSGO(Q.func, bounds,  round.n=5, parms.coding="none",
+epsgo(Q.func, bounds,  round.n=5, parms.coding="none",
   fminlower=0, flag.find.one.min =FALSE,
   show=c("none", "final", "all"), N= NULL, maxevals = 500,
   pdf.name=NULL,  pdf.width=12,  pdf.height=12, my.mfrow=c(1,1),
