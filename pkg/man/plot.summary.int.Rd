@@ -8,7 +8,7 @@ Produces a plot for summary object of a fitted interval search model.
 Plot 'visited' points against iteration steps. start.N points are initial points selected before interval search starts.
 }
 \usage{
-\method{plot}{summary.int}(x,type="summary",startN=21,...)
+\method{plot}{summary.int}(x,type="summary",startN=21,... )
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
