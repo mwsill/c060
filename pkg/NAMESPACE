@@ -6,7 +6,7 @@ export(stabpath,
        complexity.glmnet,
        fit.glmnet,
        Plot.peperr.curves,
-       EPSGO,
+       epsgo,
        tune.glmnet.interval,
        balancedFolds,
        coef.optmodel
