@@ -1,4 +1,4 @@
-import(glmnet, survival, parallel, mlegp, tgp, peperr, penalizedSVM, lattice)
+import(glmnet, survival, parallel,  peperr, penalizedSVM, lattice)
 
 export(stabpath,
        stabsel,
@@ -8,7 +8,7 @@ export(stabpath,
        Plot.peperr.curves,
        EPSGO,
        tune.glmnet.interval,
-       my.balanced.folds,
+       balancedFolds,
        coef.optmodel
        )
 
