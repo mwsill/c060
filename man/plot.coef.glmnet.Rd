@@ -10,7 +10,7 @@ Creates several plots showing the coefficient path for the final model of a cv.g
 plot.coef.glmnet(cvfit, betas)
 }
 \arguments{
-  \item{cvfit}{an object of class "cv.glmnet" as returned by the function \code{cv.glmnet}.
+  \item{cvfit}{an object of class "cv.glmnet" as returned by the function \code{cv.glmnet}.}
   \item{betas}{a vector of names of variables; must be a subset of rownames(coef(cvfit)).}
 }
 \value{
@@ -39,7 +39,7 @@ n=1000;p=100
 nzc=trunc(p/10)
 x=matrix(rnorm(n*p),n,p)
 beta=rnorm(nzc)
-fx= x[,seq(nzc)] %*% beta
+fx= x[,seq(nzc)] \%*\% beta
 eps=rnorm(n)*5
 y=drop(fx+eps)
 px=exp(fx)
