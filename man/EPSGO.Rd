@@ -86,6 +86,109 @@ machines in classification and regression via model-based global optimization"
 \emph{In Proc. Int. Joint Conf. Neural Networks,  1431-1438 }.
 }
 
+\examples{
+\dontrun{
+set.seed(1010)
+n=1000;p=100
+nzc=trunc(p/10)
+x=matrix(rnorm(n*p),n,p)
+beta=rnorm(nzc)
+fx= x[,seq(nzc)] \%*\% beta
+eps=rnorm(n)*5
+y=drop(fx+eps)
+px=exp(fx)
+px=px/(1+px)
+ly=rbinom(n=length(px),prob=px,size=1)
+set.seed(1011)
+
+ 
+nfolds = 10
+set.seed(1234)
+foldid <- balancedFolds(class.column.factor=y.classes, cross.outer=nfolds)
+
+# y - binomial
+y.classes<-ifelse(y>= median(y),1, 0)
+bounds <- t(data.frame(alpha=c(0, 1)))
+colnames(bounds)<-c("lower","upper")
+ 
+fit <- epsgo(Q.func="tune.glmnet.interval", 
+             bounds=bounds, 
+             parms.coding="none", 
+             seed = 1234, 
+             show="none",
+             fminlower = -100,
+             x = x, y = y.classes, family = "binomial", 
+             foldid = foldid,
+             type.min = "lambda.1se",
+             type.measure = "mse")
+summary(fit)
+
+# y - multinomial: low - low 25\%, middle - (25,75)-quantiles, high - larger 75\%.
+y.classes<-ifelse(y <= quantile(y,0.25),1, ifelse(y >= quantile(y,0.75),3, 2))
+bounds <- t(data.frame(alpha=c(0, 1)))
+colnames(bounds)<-c("lower","upper")
+ 
+fit <- epsgo(Q.func="tune.glmnet.interval", 
+             bounds=bounds, 
+             parms.coding="none", 
+             seed = 1234, 
+             show="none",
+             fminlower = -100,
+             x = x, y = y.classes, family = "multinomial", 
+             foldid = foldid,
+             type.min = "lambda.1se",
+             type.measure = "mse")
+summary(fit)
+
+##poisson
+N=500; p=20
+nzc=5
+x=matrix(rnorm(N*p),N,p)
+beta=rnorm(nzc)
+f = x[,seq(nzc)]%*%beta
+mu=exp(f)
+y.classes=rpois(N,mu)
+
+nfolds = 10
+set.seed(1234)
+foldid <- balancedFolds(class.column.factor=y.classes, cross.outer=nfolds)
+
+
+fit <- epsgo(Q.func="tune.glmnet.interval", 
+             bounds=bounds, 
+             parms.coding="none", 
+             seed = 1234, 
+             show="none",
+             fminlower = -100,
+             x = x, y = y.classes, family = "poisson", 
+             foldid = foldid,
+             type.min = "lambda.1se",
+             type.measure = "mse")
+summary(fit)
+
+#gaussian
+set.seed(1234)
+x=matrix(rnorm(100*1000,0,1),100,1000)
+y <- x[1:100,1:1000]\%*\%c(rep(2,5),rep(-2,5),rep(.1,990))
+
+foldid <- rep(1:10,each=10)
+
+fit <- epsgo(Q.func="tune.glmnet.interval", 
+             bounds=bounds, 
+             parms.coding="none", 
+             seed = 1234, 
+             show="none",
+             fminlower = -100,
+             x = x, y = y, family = "gaussian", 
+             foldid = foldid,
+             type.min = "lambda.1se",
+             type.measure = "mse")
+summary(fit)  
+
+# y - cox in vingette
+}
+}
+
 \keyword{ models }
 \keyword{ multivariate }
 \keyword{ graphs }
