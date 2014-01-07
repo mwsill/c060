@@ -1,4 +1,4 @@
-import(glmnet, survival, parallel,  peperr, penalizedSVM, lattice)
+import(glmnet, survival, parallel,  peperr, penalizedSVM, lattice, mlegp, tgp)
 
 export(stabpath,
        stabsel,
@@ -9,7 +9,8 @@ export(stabpath,
        epsgo,
        tune.glmnet.interval,
        balancedFolds,
-       coef.optmodel
+       coef.optmodel,
+       plot.coef.glmnet
        )
 
 S3method("print","stabpath")
