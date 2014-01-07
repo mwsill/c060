@@ -2,7 +2,7 @@
 
 \alias{epsgo}
 
-\title{  Finds an optimal solution  }
+\title{  Efficient Parameter Selection via Global Optimization  }
 \description{
    Finds an optimal solution for the Q.func function.
 }
@@ -40,7 +40,7 @@ epsgo(Q.func, bounds,  round.n=5, parms.coding="none",
 
 \value{
   \item{fmin }{minimal value of Q.func on the interval defined by bounds. }
-  \item{xmin }{coreesponding parameters for the minimum}
+  \item{xmin }{corresponding parameters for the minimum}
   \item{iter }{number of iterations}
   \item{neval }{  number of visited points }
   \item{maxevals }{  the maximum number of DIRECT function evaluations }

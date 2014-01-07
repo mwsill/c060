@@ -34,6 +34,7 @@ Manuela Zucknick \
 \email{m.zucknick@dkfz-heidelberg.de}
 }
 \examples{
+\dontrun{
 set.seed(1010)
 n=1000;p=100
 nzc=trunc(p/10)
@@ -48,5 +49,5 @@ ly=rbinom(n=length(px),prob=px,size=1)
 set.seed(1011)
 cvob1=cv.glmnet(x,y)
 plot.coef.glmnet(cvob1, c("V1","V100"))
-}
+}}
 \keyword{coefficient path}
