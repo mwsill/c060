@@ -1,4 +1,4 @@
-plot.coef.glmnet <- function(cvfit, betas){
+Plot.coef.glmnet <- function(cvfit, betas){
 
 op <- par(no.readonly = TRUE)
 par(mar=c(4,4,2.5,1), mgp=c(2.5,1,0), mfrow=c(2,2))

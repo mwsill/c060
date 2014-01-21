@@ -1,5 +1,5 @@
-\name{plot.coef.glmnet}
-\alias{plot.coef.glmnet}
+\name{Plot.coef.glmnet}
+\alias{Plot.coef.glmnet}
 \title{
 function to highlight the path of a pre-specified set of variables within the coefficient path
 }
@@ -7,7 +7,7 @@ function to highlight the path of a pre-specified set of variables within the co
 Creates several plots showing the coefficient path for the final model of a cv.glmnet fit and highlights the path of a pre-specified set of variables within the coefficient path.
 }
 \usage{
-plot.coef.glmnet(cvfit, betas)
+Plot.coef.glmnet(cvfit, betas)
 }
 \arguments{
   \item{cvfit}{an object of class "cv.glmnet" as returned by the function \code{cv.glmnet}.}

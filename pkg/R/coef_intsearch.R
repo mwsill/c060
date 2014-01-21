@@ -1,6 +1,6 @@
 
 ###########################################################################################################
-coef.optmodel<-function(object,...){
+coef.sum.intsearch<-function(object,...){
   # get coef for a object from fit object after running interval search 
    
   f1 <- object$cvreg
