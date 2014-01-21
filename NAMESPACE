@@ -9,8 +9,7 @@ export(stabpath,
        epsgo,
        tune.glmnet.interval,
        balancedFolds,
-       coef.optmodel,
-       plot.coef.glmnet
+       Plot.coef.glmnet
        )
 
 S3method("print","stabpath")
@@ -20,3 +19,4 @@ S3method("predictProb","glmnet")
 S3method("predictProb","coxnet")
 S3method("summary","intsearch")
 S3method("plot","sum.intsearch")
+S3method("coef","sum.intsearch")
