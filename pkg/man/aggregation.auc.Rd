@@ -54,20 +54,28 @@ peperr_obj <- peperr(response=y, x=x, fit.fun=fit.glmnet, args.fit=list(family="
            indices=resample.indices(n=nrow(x), sample.n = 100, method = "sub632"))
 
 tmp   <- data.frame(grp="",error=unlist(peperr_obj$sample.error)) 
-errs  <- data.frame(error=c(perr(peperr_obj,"resample"),perr(peperr_obj,"632p"),perr(peperr_obj,"app"),perr(peperr_obj,"nullmodel")),
-                    col  = c("red","blue","green","brown"), row.names=c("mean\nout-of-bag",".632plus","apparent","null model"))
-
+errs  <- data.frame(error=c(perr(peperr_obj,"resample"),
+         perr(peperr_obj,"632p"),perr(peperr_obj,"app"),
+         perr(peperr_obj,"nullmodel")), col  = c("red","blue","green","brown"),
+         row.names=c("mean\nout-of-bag",".632plus","apparent","null model"))
+                 
 p     <- ggplot(tmp, aes(grp,error))
-pg    <- p + geom_boxplot(outlier.colour = rgb(0,0,0,0), outlier.size=0) + geom_jitter(position=position_jitter(width=.1)) + 
+pg    <- p + geom_boxplot(outlier.colour = rgb(0,0,0,0), outlier.size=0) +
+         geom_jitter(position=position_jitter(width=.1)) + 
          theme_bw() + scale_y_continuous("AUC") +  scale_x_discrete("") +
          geom_hline(aes(yintercept=error, colour=col), data=errs, show_guide=T) + 
-         scale_colour_identity("error type", guide = "legend", breaks=errs$col, labels=rownames(errs)) +
+         scale_colour_identity("error type", guide = "legend", breaks=errs$col,
+         labels=rownames(errs)) +
          ggtitle("AUC \n in bootstrap samples ")                       
 
 p2     <- ggplot(data.frame(complx=peperr_obj$sample.complexity), aes(x=complx))
-pg2    <- p2 + geom_histogram(binwidth = 0.02, fill = "white", colour="black") + theme_bw()+  xlab(expression(lambda)) +
-          ylab("frequency") + geom_vline(xintercept=peperr_obj$selected.complexity, colour="red") + 
-          ggtitle("Selected complexity \n in bootstrap samples") + ggplot2::annotate("text", x = 0.12, y = -0.5, label = "full data", colour="red", size=4)
+pg2    <- p2 + geom_histogram(binwidth = 0.02, fill = "white", colour="black") +
+          theme_bw()+  xlab(expression(lambda)) +
+          ylab("frequency") + 
+          geom_vline(xintercept=peperr_obj$selected.complexity, colour="red") + 
+          ggtitle("Selected complexity \n in bootstrap samples") +
+          ggplot2::annotate("text", x = 0.12, y = -0.5,
+          label = "full data", colour="red", size=4)
 
 grid.arrange(pg2, pg, ncol=2)
 
