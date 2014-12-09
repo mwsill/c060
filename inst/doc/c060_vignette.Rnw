@@ -1,4 +1,4 @@
-\documentclass[nojss]{jss}
+\documentclass[]{jss}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% declarations for jss.cls %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -502,10 +502,10 @@ At the initial step we sample 21 points in the parameter space for $\alpha$ as s
 <<interval_search_cox_fit_opt, echo=FALSE,results=hide>>=
 #select the model with optimal parameters from the object fit
 opt.model <- sumint$opt.models[[1]]
-cofn <- coef(opt.model)
+cofn <- coef(opt.model$fit)
 @
 
-The final elastic net model contains \Sexpr{length(cofn)} selected features, which obviously reflects much less sparsity than the final lasso model.
+The final elastic net model contains \Sexpr{sum(cofn!=0)} selected features, which obviously reflects much less sparsity than the final lasso model.
 The results are consistent in the sense, that the features contained in the final lasso model are also contained in the elastic net model. Also, the individual feature selected by the stability algorithm is in the set of selected elastic net features.
 <<interval_search_cox_check_overlap_stability,echo=FALSE,results=hide>>=
 names(cofn.lasso) %in% names(cofn)
