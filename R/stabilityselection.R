@@ -1,6 +1,3 @@
-#require(glmnet)
-#require(parallel)
-
 stabpath <- function(y,x,size=0.632,steps=100,weakness=1,mc.cores=getOption("mc.cores", 2L),...){
   fit <- glmnet(x,y,...)
   if(class(fit)[1]=="multnet"|class(fit)[1]=="lognet") y <- as.factor(y)
